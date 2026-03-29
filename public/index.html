@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tamil Nadu 2026 Election Dashboard</title>
+  <meta name="description" content="Interactive dashboard for the 2026 Tamil Nadu Legislative Assembly Elections — constituency map, voter data, candidate lists, and alliance breakdowns.">
+  <!-- Built with Perplexity — https://www.perplexity.ai/computer -->
+  <meta name="generator" content="Perplexity Computer">
+  <meta name="referrer" content="origin">
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-label="TN Elections Logo">
+          <rect x="2" y="2" width="32" height="32" rx="6" stroke="#fff" stroke-width="2"/>
+          <text x="18" y="23" text-anchor="middle" fill="#fff" font-family="Cabinet Grotesk, sans-serif" font-weight="800" font-size="16">TN</text>
+        </svg>
+        <div>
+          <h1 class="logo-title">TN Elections 2026</h1>
+          <p class="logo-sub">17th Tamil Nadu Legislative Assembly</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <span class="badge badge-live">23 APR 2026</span>
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+          <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="map" onclick="switchTab('map')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+      Interactive Map
+    </button>
+    <button class="tab" data-tab="table" onclick="switchTab('table')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      Constituency Table
+    </button>
+    <button class="tab" data-tab="overview" onclick="switchTab('overview')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      State Overview
+    </button>
+  </nav>
+
+  <!-- MAP TAB -->
+  <section id="tab-map" class="tab-content active">
+    <div class="map-container">
+      <div class="map-controls">
+        <select id="mapColorMode" onchange="updateMapColoring()">
+          <option value="2021">2021 Results</option>
+          <option value="spa2026">2026 SPA Candidates</option>
+          <option value="nda2026">2026 NDA Candidates</option>
+        </select>
+        <div class="map-legend" id="mapLegend"></div>
+      </div>
+      <div class="map-wrapper">
+        <div id="mapSvg" class="map-svg-container"></div>
+        <div id="tooltip" class="tooltip"></div>
+      </div>
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="mapSearch" placeholder="Search constituency..." oninput="searchConstituency(this.value)">
+        <div id="searchResults" class="search-results"></div>
+      </div>
+    </div>
+    <!-- Detail Panel -->
+    <div id="detailPanel" class="detail-panel">
+      <button class="panel-close" onclick="closePanel()">&times;</button>
+      <div id="panelContent"></div>
+    </div>
+  </section>
+
+  <!-- TABLE TAB -->
+  <section id="tab-table" class="tab-content">
+    <div class="table-wrapper">
+      <div class="table-controls">
+        <div class="search-bar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="tableSearch" placeholder="Search by name, district, party..." oninput="filterTable(this.value)">
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table id="constTable">
+          <thead>
+            <tr>
+              <th onclick="sortTable(0)" class="sortable">AC No</th>
+              <th onclick="sortTable(1)" class="sortable">Constituency</th>
+              <th onclick="sortTable(2)" class="sortable">District</th>
+              <th onclick="sortTable(3)" class="sortable num">Total Voters</th>
+              <th onclick="sortTable(4)" class="sortable num">Male</th>
+              <th onclick="sortTable(5)" class="sortable num">Female</th>
+              <th onclick="sortTable(6)" class="sortable num">TG</th>
+              <th onclick="sortTable(7)" class="sortable">2021 Winner</th>
+              <th onclick="sortTable(8)" class="sortable">SPA Party</th>
+              <th onclick="sortTable(9)" class="sortable">SPA Candidate</th>
+              <th onclick="sortTable(10)" class="sortable">NDA Party</th>
+              <th onclick="sortTable(11)" class="sortable">NDA Candidate</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- OVERVIEW TAB -->
+  <section id="tab-overview" class="tab-content">
+    <div class="overview-container">
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-value">234</div>
+          <div class="kpi-label">Constituencies</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">5.67 Cr</div>
+          <div class="kpi-label">Total Voters</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value accent">23 Apr 2026</div>
+          <div class="kpi-label">Polling Date</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">4 May 2026</div>
+          <div class="kpi-label">Result Date</div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3>2021 Results</h3>
+          <div class="chart-wrap"><canvas id="results2021Chart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Gender Breakdown</h3>
+          <div class="chart-wrap"><canvas id="genderChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>SPA Seat Sharing (2026)</h3>
+          <div class="chart-wrap"><canvas id="spaChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>NDA Seat Sharing (2026)</h3>
+          <div class="chart-wrap"><canvas id="ndaChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="manifesto-section">
+        <h3>Key Manifesto Promises</h3>
+        <div class="manifesto-grid">
+          <div class="manifesto-card dmk">
+            <div class="manifesto-party">
+              <span class="party-dot" style="background:#c41e3a"></span>
+              DMK (Secular Progressive Alliance)
+            </div>
+            <div class="manifesto-leader">CM Candidate: M. K. Stalin</div>
+            <ul>
+              <li>Continuation of welfare schemes</li>
+              <li>1,000 new schools of excellence</li>
+              <li>Free bus pass for students</li>
+              <li>Tamil Nadu Industrial Policy 2.0</li>
+              <li>Universal health coverage expansion</li>
+            </ul>
+          </div>
+          <div class="manifesto-card aiadmk">
+            <div class="manifesto-party">
+              <span class="party-dot" style="background:#0d8c3f"></span>
+              AIADMK (NDA Alliance)
+            </div>
+            <div class="manifesto-leader">CM Candidate: Edappadi K. Palaniswami</div>
+            <ul>
+              <li>Free refrigerators for women with ration cards</li>
+              <li>Education loan waiver</li>
+              <li>Social security pensions raised to ₹2,000</li>
+              <li>Lentils through public distribution</li>
+              <li>297 total welfare promises</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>Data sources: Election Commission of India, Tamil Nadu CEO Office, Wikipedia. Built with <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener">Perplexity</a>.</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
