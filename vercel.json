@@ -1,11 +1,5 @@
 {
   "buildCommand": "",
   "outputDirectory": "public",
-  "framework": null,
-  "analytics": {
-    "id": true
-  },
-  "speedInsights": {
-    "id": true
-  }
+  "framework": null
 }
