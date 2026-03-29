@@ -4,7 +4,8 @@ const PARTY_COLORS = {
   'DMK': '#c41e3a', 'AIADMK': '#0d8c3f', 'INC': '#19769f', 'BJP': '#ff6b00',
   'PMK': '#e6c200', 'VCK': '#8b1a8b', 'CPI(M)': '#cc0000', 'CPI': '#cc0033',
   'DMDK': '#003366', 'MDMK': '#006633', 'IUML': '#009933', 'AMMK': '#228b22',
-  'TMC(M)': '#336699', 'NTK': '#cc3300', 'KMDK': '#996633', 'Others': '#888'
+  'TMC(M)': '#336699', 'NTK': '#cc3300', 'KMDK': '#996633', 'TVK': '#5c2d91',
+  'Others': '#888'
 };
 
 function getPartyColor(party) {
@@ -103,21 +104,22 @@ function updateMapColoring() {
     if (mode === '2021' && c) {
       party = c.w21;
       color = getPartyColor(party);
-    } else if (mode === 'spa2026' && c) {
-      party = c.sp;
-      color = getPartyColor(party);
-    } else if (mode === 'nda2026' && c) {
-      party = c.np;
-      color = getPartyColor(party);
+    } else if (mode === 'generic') {
+      // Neutral color for generic constituency map
+      color = '#7fb3d3';
     }
     if (party) partiesUsed.add(party);
     d3.select(this).attr('fill', color).attr('fill-opacity', 0.85);
   });
 
   // Update legend
-  legend.innerHTML = Array.from(partiesUsed).sort().map(p =>
-    `<span class="legend-item"><span class="legend-swatch" style="background:${getPartyColor(p)}"></span>${p}</span>`
-  ).join('');
+  if (mode === 'generic') {
+    legend.innerHTML = '<span class="legend-item"><span class="legend-swatch" style="background:#7fb3d3"></span>Constituency</span>';
+  } else {
+    legend.innerHTML = Array.from(partiesUsed).sort().map(p =>
+      `<span class="legend-item"><span class="legend-swatch" style="background:${getPartyColor(p)}"></span>${p}</span>`
+    ).join('');
+  }
 }
 
 function handleMouseOver(e, d) {
@@ -126,11 +128,10 @@ function handleMouseOver(e, d) {
   const mode = document.getElementById('mapColorMode').value;
   let partyInfo = '';
   if (mode === '2021') partyInfo = `<span class="tt-party">2021 Winner: ${c.w21}</span>`;
-  else if (mode === 'spa2026') partyInfo = `<span class="tt-party">SPA: ${c.sp} — ${c.sc || 'TBA'}</span>`;
-  else if (mode === 'nda2026') partyInfo = `<span class="tt-party">NDA: ${c.np} — ${c.nc || 'TBA'}</span>`;
+  else partyInfo = `<span class="tt-party">District: ${c.d}</span>`;
 
   document.getElementById('tooltip').innerHTML =
-    `<strong>AC ${c.ac}: ${c.n}</strong><br>${d.properties.district}<br>${partyInfo}<br>Voters: ${formatNum(c.t)}`;
+    `<strong>AC ${c.ac}: ${c.n}</strong><br>${partyInfo}<br>Voters: ${formatNum(c.t)}`;
   document.getElementById('tooltip').style.display = 'block';
   d3.select(this).attr('stroke', '#fff').attr('stroke-width', 2).attr('fill-opacity', 1);
 }

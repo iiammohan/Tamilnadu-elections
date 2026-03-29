@@ -4,3 +4,4 @@ update_data.py
 verify_data.py
 extract_data.py
 __pycache__/
+.vercel

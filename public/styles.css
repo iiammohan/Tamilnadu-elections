@@ -496,58 +496,56 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
   max-height: 300px;
 }
 
-.manifesto-section { margin-bottom: 1.5rem; }
-.manifesto-section h3 {
+/* Manifesto Tab */
+.manifesto-container { padding: 0.5rem 0; }
+.manifesto-heading {
   font-family: 'Cabinet Grotesk', sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.01em;
 }
-.manifesto-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-.manifesto-card {
-  background: var(--bg-card);
+.manifesto-table-wrap {
+  overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 1.25rem;
   box-shadow: var(--shadow);
 }
-.manifesto-party {
+.manifesto-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  background: var(--bg-card);
+}
+.manifesto-table thead {
+  background: var(--bg-alt, var(--bg-card));
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.manifesto-table th {
+  padding: 0.85rem 1rem;
+  text-align: left;
   font-weight: 700;
-  font-size: 0.88rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.3rem;
+  font-size: 0.82rem;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
 }
-.party-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.manifesto-leader {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-bottom: 0.75rem;
+.manifesto-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-light, var(--border));
+  vertical-align: top;
 }
-.manifesto-card ul {
-  list-style: none;
-  padding: 0;
+.manifesto-table tbody tr:hover { background: rgba(0,0,0,0.03); }
+.dark .manifesto-table tbody tr:hover { background: rgba(255,255,255,0.04); }
+.manifesto-table .cat-cell {
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--accent);
+  min-width: 130px;
 }
-.manifesto-card li {
-  font-size: 0.8rem;
-  padding: 0.35rem 0;
-  border-bottom: 1px solid var(--border-light);
-  padding-left: 1rem;
-  position: relative;
-}
-.manifesto-card li::before {
-  content: '→';
-  position: absolute;
-  left: 0;
-  color: var(--text-faint);
-  font-size: 0.7rem;
-}
-.manifesto-card li:last-child { border-bottom: none; }
+.party-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; vertical-align: middle; flex-shrink: 0; }
 
 /* === Footer === */
 .footer {
@@ -564,7 +562,6 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 900px) {
   .kpi-row { grid-template-columns: repeat(2, 1fr); }
   .charts-grid { grid-template-columns: 1fr; }
-  .manifesto-grid { grid-template-columns: 1fr; }
   .map-svg-container { aspect-ratio: 2/3; max-height: 65vh; }
 }
 @media (max-width: 600px) {

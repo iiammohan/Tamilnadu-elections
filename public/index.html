@@ -49,6 +49,10 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
       State Overview
     </button>
+    <button class="tab" data-tab="manifesto" onclick="switchTab('manifesto')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Manifesto
+    </button>
   </nav>
 
   <!-- MAP TAB -->
@@ -56,9 +60,8 @@
     <div class="map-container">
       <div class="map-controls">
         <select id="mapColorMode" onchange="updateMapColoring()">
+          <option value="generic">Constituency Map</option>
           <option value="2021">2021 Results</option>
-          <option value="spa2026">2026 SPA Candidates</option>
-          <option value="nda2026">2026 NDA Candidates</option>
         </select>
         <div class="map-legend" id="mapLegend"></div>
       </div>
@@ -153,38 +156,90 @@
         </div>
       </div>
 
-      <div class="manifesto-section">
-        <h3>Key Manifesto Promises</h3>
-        <div class="manifesto-grid">
-          <div class="manifesto-card dmk">
-            <div class="manifesto-party">
-              <span class="party-dot" style="background:#c41e3a"></span>
-              DMK (Secular Progressive Alliance)
-            </div>
-            <div class="manifesto-leader">CM Candidate: M. K. Stalin</div>
-            <ul>
-              <li>Continuation of welfare schemes</li>
-              <li>1,000 new schools of excellence</li>
-              <li>Free bus pass for students</li>
-              <li>Tamil Nadu Industrial Policy 2.0</li>
-              <li>Universal health coverage expansion</li>
-            </ul>
-          </div>
-          <div class="manifesto-card aiadmk">
-            <div class="manifesto-party">
-              <span class="party-dot" style="background:#0d8c3f"></span>
-              AIADMK (NDA Alliance)
-            </div>
-            <div class="manifesto-leader">CM Candidate: Edappadi K. Palaniswami</div>
-            <ul>
-              <li>Free refrigerators for women with ration cards</li>
-              <li>Education loan waiver</li>
-              <li>Social security pensions raised to ₹2,000</li>
-              <li>Lentils through public distribution</li>
-              <li>297 total welfare promises</li>
-            </ul>
-          </div>
-        </div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO TAB -->
+  <section id="tab-manifesto" class="tab-content">
+    <div class="manifesto-container">
+      <h2 class="manifesto-heading">Party Manifestos — 2026 Tamil Nadu Elections</h2>
+      <div class="manifesto-table-wrap">
+        <table class="manifesto-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th><span class="party-dot" style="background:#c41e3a"></span> DMK</th>
+              <th><span class="party-dot" style="background:#0d8c3f"></span> AIADMK</th>
+              <th><span class="party-dot" style="background:#5c2d91"></span> TVK</th>
+              <th><span class="party-dot" style="background:#cc3300"></span> NTK</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="cat-cell">CM Candidate</td>
+              <td>M. K. Stalin</td>
+              <td>Edappadi K. Palaniswami</td>
+              <td>Vijay</td>
+              <td>Seeman</td>
+            </tr>
+            <tr>
+              <td class="cat-cell">Alliance</td>
+              <td>SPA (Secular Progressive Alliance)</td>
+              <td>NDA (National Democratic Alliance)</td>
+              <td>Tamilaga Vetri Kazhagam (Independent)</td>
+              <td>Naam Tamilar Katchi (Independent)</td>
+            </tr>
+            <tr>
+              <td class="cat-cell">Welfare &amp; Social Security</td>
+              <td>Universal health coverage expansion; ₹1,000/month for women heads of families; Free bus pass for students</td>
+              <td>Social security pensions raised to ₹2,000; Free refrigerators for ration card holders; 297 total welfare promises</td>
+              <td>₹3,000/month pension for senior citizens; Free healthcare for all; Monthly stipend for homemakers</td>
+              <td>₹2,000/month for unemployed youth; Free healthcare tied to Tamil identity; Universal basic income pilot</td>
+            </tr>
+            <tr>
+              <td class="cat-cell">Education</td>
+              <td>1,000 new schools of excellence; Free laptops for college students; Skill development centres in every district</td>
+              <td>Education loan waiver; Free textbooks up to degree level; Increase teacher recruitment</td>
+              <td>Education overhaul with emphasis on Tamil medium; Free coaching for competitive exams; Digital classrooms in all government schools</td>
+              <td>Tamil-medium compulsory in primary education; Abolish NEET; Free education up to graduation</td>
+            </tr>
+            <tr>
+              <td class="cat-cell">Employment &amp; Economy</td>
+              <td>Tamil Nadu Industrial Policy 2.0; 10 lakh new jobs in IT/manufacturing; MSME support packages</td>
+              <td>50 new industrial parks; Youth entrepreneurship fund; Government job quota for locals</td>
+              <td>Job guarantee for every graduate within 1 year; Tech startup incubation centres; Reduce govt red tape</td>
+              <td>Tamil Nadu economic sovereignty; Local-first hiring policy; Self-reliance in agriculture and industry</td>
+            </tr>
+            <tr>
+              <td class="cat-cell">Agriculture &amp; Water</td>
+              <td>Cauvery water management board strengthening; Crop insurance expansion; ₹10,000/acre direct support</td>
+              <td>Lentils through public distribution; Farmer loan waiver; New dams and check dams</td>
+              <td>Guaranteed MSP for all crops; Organic farming subsidies; River interlinking projects</td>
+              <td>100% debt waiver for farmers; Ban corporate farming; Traditional farming revival</td>
+            </tr>
+            <tr>
+              <td class="cat-cell">Infrastructure</td>
+              <td>Metro expansion to Tier-2 cities; 10,000 km new roads; Smart city upgrades</td>
+              <td>Monorail in Chennai and Coimbatore; Housing for all by 2030; Improved rural connectivity</td>
+              <td>World-class public transport; Affordable housing mission; Green energy infrastructure</td>
+              <td>Decentralised governance; Rural infrastructure priority; Tamil Nadu-centric transport planning</td>
+            </tr>
+            <tr>
+              <td class="cat-cell">Women &amp; Youth</td>
+              <td>Continuation of Kalaignar Magalir Urimai Thogai; Women safety app; 33% reservation in local bodies</td>
+              <td>Gold scheme for unmarried women; Free sewing machines; Women self-help group support</td>
+              <td>50% women candidates in elections; Free menstrual hygiene products; Creche in every ward</td>
+              <td>Equal pay legislation for women; Youth parliament in every district; Free sports academies</td>
+            </tr>
+            <tr>
+              <td class="cat-cell">Key Unique Promise</td>
+              <td>Establish Tamil Nadu as India's $1 Trillion economy state by 2030</td>
+              <td>Amma brand welfare schemes revival with modern upgrades</td>
+              <td>First-time party contesting all 234 seats — "clean politics" pledge</td>
+              <td>Independent Tamil Nadu foreign policy advocacy; Eelam Tamil solidarity</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </section>
