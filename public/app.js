@@ -251,6 +251,20 @@ function openDetailPanel(c, district) {
           <div class="pc-party">NDA · ${c.np}</div>
         </div>
       </div>
+      <div class="panel-candidate">
+        <div class="pc-dot" style="background:${getPartyColor('TVK')}"></div>
+        <div>
+          <div class="pc-name">${c.tc || 'TBA'}</div>
+          <div class="pc-party">TVK</div>
+        </div>
+      </div>
+      <div class="panel-candidate">
+        <div class="pc-dot" style="background:${getPartyColor('NTK')}"></div>
+        <div>
+          <div class="pc-name">${c.nkc || 'TBA'}</div>
+          <div class="pc-party">NTK</div>
+        </div>
+      </div>
     </div>
     <div class="panel-section">
       <h4>2021 Election</h4>
@@ -279,7 +293,7 @@ let sortAsc = true;
 
 function buildTable() {
   tableData = CONSTITUENCIES.map(c => [
-    c.ac, c.n, c.d, c.t, c.m, c.f, c.tg, c.w21, c.sp, c.sc, c.np, c.nc
+    c.ac, c.n, c.d, c.t, c.m, c.f, c.tg, c.w21, c.sp, c.sc, c.np, c.nc, c.tc, c.nkc
   ]);
   renderTable(tableData);
   tableBuilt = true;
@@ -302,6 +316,8 @@ function renderTable(data) {
       <td>${r[9] || '<em style="color:var(--text-faint)">TBA</em>'}</td>
       <td><span class="party-badge" style="background:${getPartyColor(r[10])}">${r[10]}</span></td>
       <td>${r[11] || '<em style="color:var(--text-faint)">TBA</em>'}</td>
+      <td><span class="party-badge" style="background:${getPartyColor('TVK')}">${r[12] || 'TBA'}</span></td>
+      <td><span class="party-badge" style="background:${getPartyColor('NTK')}">${r[13] || 'TBA'}</span></td>
     </tr>`;
   }).join('');
 }
