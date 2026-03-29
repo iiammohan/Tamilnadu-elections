@@ -293,7 +293,7 @@ let sortAsc = true;
 
 function buildTable() {
   tableData = CONSTITUENCIES.map(c => [
-    c.ac, c.n, c.d, c.t, c.m, c.f, c.tg, c.w21, c.sp, c.sc, c.np, c.nc, c.tc, c.nkc
+    c.ac, c.n, c.d, c.t, c.m, c.f, c.tg, c.sp, c.sc, c.np, c.nc, c.tc, c.nkc, c.w21
   ]);
   renderTable(tableData);
   tableBuilt = true;
@@ -302,7 +302,6 @@ function buildTable() {
 function renderTable(data) {
   const tbody = document.getElementById('tableBody');
   tbody.innerHTML = data.map(r => {
-    const partyBg = getPartyColor(r[7]);
     return `<tr onclick="tableRowClick(${r[0]})">
       <td>${r[0]}</td>
       <td><strong>${r[1]}</strong></td>
@@ -311,13 +310,13 @@ function renderTable(data) {
       <td class="num">${formatNum(r[4])}</td>
       <td class="num">${formatNum(r[5])}</td>
       <td class="num">${formatNum(r[6])}</td>
-      <td><span class="party-badge" style="background:${partyBg}">${r[7]}</span></td>
-      <td><span class="party-badge" style="background:${getPartyColor(r[8])}">${r[8]}</span></td>
-      <td>${r[9] || '<em style="color:var(--text-faint)">TBA</em>'}</td>
-      <td><span class="party-badge" style="background:${getPartyColor(r[10])}">${r[10]}</span></td>
-      <td>${r[11] || '<em style="color:var(--text-faint)">TBA</em>'}</td>
-      <td><span class="party-badge" style="background:${getPartyColor('TVK')}">${r[12] || 'TBA'}</span></td>
-      <td><span class="party-badge" style="background:${getPartyColor('NTK')}">${r[13] || 'TBA'}</span></td>
+      <td><span class="party-badge" style="background:${getPartyColor(r[7])}">${r[7]}</span></td>
+      <td>${r[8] || '<em style="color:var(--text-faint)">TBA</em>'}</td>
+      <td><span class="party-badge" style="background:${getPartyColor(r[9])}">${r[9]}</span></td>
+      <td>${r[10] || '<em style="color:var(--text-faint)">TBA</em>'}</td>
+      <td><span class="party-badge" style="background:${getPartyColor('TVK')}">${r[11] || 'TBA'}</span></td>
+      <td><span class="party-badge" style="background:${getPartyColor('NTK')}">${r[12] || 'TBA'}</span></td>
+      <td><span class="party-badge" style="background:${getPartyColor(r[13])}">${r[13]}</span></td>
     </tr>`;
   }).join('');
 }
