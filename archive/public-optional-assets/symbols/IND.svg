@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="56" viewBox="0 0 160 56">
+  <rect width="160" height="56" rx="10" fill="#777"/>
+  <text x="80" y="24" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#fff">IND</text>
+  <text x="80" y="42" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#fff">Independent</text>
+</svg>

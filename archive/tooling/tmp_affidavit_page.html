@@ -1,0 +1,829 @@
+﻿3
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>
+	NOMINATION
+    
+</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link href="SVEEP_files/jquery-ui.css" rel="stylesheet" />
+        <script src="SVEEP_files/jquery-1.12.4.js"></script>
+        <script src="SVEEP_files/jquery-ui.js"></script>
+        
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="icon" href="images/home.png" type="image/png" sizes="16x16" /><meta name="viewport" content="width=device-width, initial-scale=1" /><link rel="stylesheet" href="./SVEEP_files/bootstrap.min.css" />
+        <script src="./SVEEP_files/jquery.min.js"></script>
+        <script src="./SVEEP_files/bootstrap.min.js"></script>
+
+        <style type="text/css">
+            body {
+                font-family: Arial;
+                font-size: 10pt;
+            }
+
+            table {
+                /*border: 1px solid #F7F7F7;*/
+                border-collapse: collapse;
+            }
+
+
+
+                table th {
+                    background-color: #F7F7F7;
+                    color: #333;
+                    font-weight: bold;
+                }
+
+                table th, table td {
+                    padding: 5px;
+                    /*border: 1px solid #ccc;*/
+                }
+
+                table img {
+                    height: 80px;
+                    width: 80px;
+                    cursor: pointer;
+                }
+
+            #dialog img {
+                height: 550px;
+                width: 575px;
+                cursor: pointer;
+            }
+
+            .button1 {
+                background-color: #4CAF50; /* Green */
+                border: none;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+            }
+
+            .box {
+                border: 2px solid #eee;
+                background: #fff !important;
+                margin-bottom: 28px;
+            }
+
+            .row-fluid [class*="span"] {
+                display: block;
+                /*float: left;*/
+                width: 100%;
+                min-height: 30px;
+                margin-left: 2.127659574468085%;
+                *margin-left: 2.074468085106383%;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+            .row-fluid .span12 {
+                width: 100%;
+                *width: 99.94680851063829%;
+            }
+
+            .blue, .blue [class="box-header"], .blue.box, .slider.blue .ui-slider-range, .progress.blue .ui-progressbar-value, .sliderVertical.blue .ui-slider-range, .progressSlim.blue .ui-progressbar-value, .label-info, .badge-info {
+                background: #2D89EF !important;
+                border-color: #2D89EF !important;
+                color: #fff;
+            }
+
+            .box-header {
+                /*height: 16px;*/
+                font-size: 16px;
+                line-height: 16px;
+                padding: 10px;
+                background: #eee;
+                -webkit-box-shadow: none;
+                -moz-box-shadow: none;
+                box-shadow: none;
+                overflow: hidden;
+            }
+
+                .box-header .break {
+                    /* border-left: 1px solid #FFF; */
+                    margin: -12px 10px -10px 10px;
+                    padding: 12px 0px 10px 0px;
+                }
+
+            .box-content {
+                position: relative;
+                z-index: 50;
+                margin-top: -1px;
+                padding: 10px;
+                background: #fff !important;
+            }
+
+            .row-fluid {
+                width: 100%;
+                *zoom: 1;
+            }
+
+                .row-fluid [class*="span"]:first-child {
+                    margin-left: 0;
+                }
+
+                .row-fluid .span2 {
+                    width: 14.893617021276595%;
+                    *width: 14.840425531914894%;
+                }
+
+                .row-fluid [class*="span"] {
+                    display: block;
+                    float: left;
+                    width: 100%;
+                    min-height: 30px;
+                    margin-left: 2.127659574468085%;
+                    *margin-left: 2.074468085106383%;
+                    -webkit-box-sizing: border-box;
+                    -moz-box-sizing: border-box;
+                    box-sizing: border-box;
+                }
+
+            .quick-button.metro {
+                position: relative;
+                color: #fff;
+                text-shadow: 0 1px 1px rgba(0, 0, 0, .25);
+                filter: none;
+                padding: 30px 10px 0px 10px;
+                -webkit-border-radius: 0px;
+                -moz-border-radius: 0px;
+                border-radius: 0px;
+            }
+
+            .span2 {
+                width: 140px;
+            }
+
+            [class*="span"] {
+                /*float: left;*/
+                min-height: 1px;
+                margin-left: 20px;
+            }
+
+            .quick-button {
+                border: 1px solid #ddd;
+                margin-bottom: -1px;
+                padding: 30px 0px 10px 0px;
+                font-size: 14px;
+                background-color: #fafafa;
+                background-image: -moz-linear-gradient(top, #fafafa, #efefef);
+                background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fafafa), to(#efefef));
+                background-image: -webkit-linear-gradient(top, #fafafa, #efefef);
+                background-image: -o-linear-gradient(top, #fafafa, #efefef);
+                background-image: linear-gradient(to bottom, #fafafa, #efefef);
+                filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fafafa', endColorstr='#efefef', GradientType=0);
+                -webkit-box-shadow: 0 1px 0px rgba(255, 255, 255, .8);
+                -moz-box-shadow: 0 1px 0px rgba(255, 255, 255, .8);
+                box-shadow: 0 1px 0px rgba(255, 255, 255, .8);
+                -webkit-border-radius: 2px;
+                -moz-border-radius: 2px;
+                border-radius: 2px;
+                display: block;
+                color: #646464;
+                text-shadow: 0 1px 0px rgba(255, 255, 255, .6);
+                text-align: center;
+                cursor: pointer;
+                position: relative;
+                -webkit-transition: all 0.3s ease;
+                -moz-transition: all 0.3s ease;
+                -ms-transition: all 0.3s ease;
+                -o-transition: all 0.3s ease;
+                transition: all 0.3s ease;
+            }
+
+            .yellow, .yellow [class="box-header"], .yellow.box, .slider.yellow .ui-slider-range, .progress.yellow .ui-progressbar-value, .sliderVertical.yellow .ui-slider-range, .progressSlim.yellow .ui-progressbar-value, .label-warning, .badge-warning {
+                background: #FFC40D !important;
+                border-color: #FFC40D !important;
+                color: #fff;
+            }
+
+            .quick-button.metro i {
+                font-size: 64px;
+                text-align: center !important;
+            }
+
+            .quick-button i {
+                font-size: 32px;
+            }
+
+            [class^="icon-"], [class*=" icon-"] {
+                display: inline-block;
+                width: 14px;
+                height: 14px;
+                margin-top: 1px;
+                *margin-right: .3em;
+                line-height: 14px;
+                vertical-align: text-top;
+                background-image: url(../img/glyphicons-halflings.png);
+                background-position: 14px 14px;
+                background-repeat: no-repeat;
+            }
+
+            .red, .red [class="box-header"], .red.box, .slider.red .ui-slider-range, .progress.red .ui-progressbar-value, .sliderVertical.red .ui-slider-range, .progressSlim.red .ui-progressbar-value, .label-important, .badge-important {
+                background: #EB3C00 !important;
+                border-color: #EB3C00 !important;
+                color: #fff;
+            }
+
+            .green, .green [class="box-header"], .green.box, .slider.green .ui-slider-range, .progress.green .ui-progressbar-value, .sliderVertical.green .ui-slider-range, .progressSlim.green .ui-progressbar-value, .label-success, .badge-success {
+                background: #00A300 !important;
+                border-color: #00A300 !important;
+                color: #fff;
+            }
+        </style>
+
+
+        <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="./SVEEP_files/font-awesome.min(1).css" />
+        <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="./SVEEP_files/animate.css" />
+        <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="./SVEEP_files/select2.min.css" />
+        <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="./SVEEP_files/perfect-scrollbar.css" />
+        <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="./SVEEP_files/util.css" /><link rel="stylesheet" type="text/css" href="./SVEEP_files/main.css" />
+        <!--===============================================================================================-->
+        <!--===============================================================================================-->
+        <script src="./SVEEP_files/jquery-3.2.1.min.js"></script>
+        <!--===============================================================================================-->
+        <script src="./SVEEP_files/popper.js"></script>
+        <script src="./SVEEP_files/bootstrap1.min.js"></script>
+        <!--===============================================================================================-->
+        <script src="./SVEEP_files/select2.min.js"></script>
+        <!--===============================================================================================-->
+        <script src="./SVEEP_files/main.js"></script>
+
+        <script type="text/javascript" src="./SVEEP_files/jquery1.min.js"></script>
+        <link rel="stylesheet" href="./SVEEP_files/jquery-ui.css" />
+        <script type="text/javascript" src="./SVEEP_files/jquery-ui.min.js"></script>
+        
+        <script type="text/javascript">
+            $(function () {
+                $("#dialog").dialog({
+                    autoOpen: false,
+                    modal: true,
+                    height: 600,
+                    width: 600,
+                    title: "Zoomed Image"
+                });
+                $("[id*=GridView1] img").click(function () {
+                    $('#dialog').html('');
+                    $('#dialog').append($(this).clone());
+                    $('#dialog').dialog('open');
+                });
+            });
+        </script>
+
+
+        <link rel="stylesheet" href="./SVEEP_files/font-awesome.min.css" />
+        <style>
+            .navbar {
+                width: 100%;
+                background-color: #eee;
+                overflow: auto;
+            }
+
+                .navbar a {
+                    float: left;
+                    padding: 12px;
+                    color: white;
+                    text-decoration: none;
+                    font-size: 17px;
+                }
+
+                    .navbar a:hover {
+                        background-color: #000;
+                    }
+
+            .active {
+                background-color: #808080;
+            }
+
+            .active1 {
+                background-color: #0094ff;
+            }
+
+            .label, .badge {
+                display: inline-block;
+                padding: 2px 4px;
+                font-size: 11.844px;
+                font-weight: bold;
+                line-height: 14px;
+                color: #fff;
+                text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+                white-space: nowrap;
+                vertical-align: baseline;
+                background-color: #999;
+            }
+
+            .row-fluid .span2 {
+                width: 14.893617021276595%;
+                *width: 14.840425531914894%;
+            }
+
+            .row-fluid [class*="span"] {
+                display: block;
+                float: left;
+                width: 100%;
+                min-height: 30px;
+                margin-left: 2.127659574468085%;
+                *margin-left: 2.074468085106383%;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+            .quick-button.metro {
+                position: relative;
+                color: #fff;
+                text-shadow: 0 1px 1px rgba(0, 0, 0, .25);
+                filter: none;
+                padding: 30px 10px 0px 10px;
+                -webkit-border-radius: 0px;
+                -moz-border-radius: 0px;
+                border-radius: 0px;
+            }
+
+
+
+            .row-fluid::before, .row-fluid::after {
+                display: table;
+                line-height: 0;
+                content: "";
+            }
+
+            .row-fluid .span2 {
+                width: 14.89%;
+                *width: 14.840425531914894%:;
+            }
+
+
+            .auto-style1 {
+                display: block;
+                width: 100%;
+                padding: 6px 12px;
+                font-size: 14px;
+                line-height: 1.42857143;
+                color: #555;
+                background-color: #fff;
+                background-image: none;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+                box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+                -webkit-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+                -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+                -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+                transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+                transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+                transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+            }
+        </style>
+        <style>
+            body {
+                margin: 0;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            .topnav {
+                position: relative;
+                overflow: hidden;
+                background-color: white;
+                color: #000;
+            }
+
+                .topnav a {
+                    float: left;
+                    color: #000;
+                    text-align: center;
+                    padding: 14px 16px;
+                    text-decoration: none;
+                    font-size: 17px;
+                    background-color: rgba(229, 232, 171, 0.23);
+                }
+
+                    .topnav a:hover {
+                        background-color: #ddd;
+                        color: black;
+                    }
+
+                    .topnav a.active {
+                        background-color: #4CAF50;
+                        color: white;
+                    }
+
+            .topnav-centered a {
+                float: none;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            .topnav-right {
+                float: right;
+                background-color: #b200ff;
+            }
+
+            /* Responsive navigation menu (for mobile devices) */
+            @media screen and (max-width: 600px) {
+                .topnav a, .topnav-right {
+                    float: none;
+                    display: block;
+                }
+
+                .topnav-centered a {
+                    position: relative;
+                    top: 0;
+                    left: 0;
+                    transform: none;
+                }
+            }
+        </style>
+    </head>
+<body>
+        <form method="post" action="./affidavit.aspx" id="form2">
+<div class="aspNetHidden">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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" />
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['form2'];
+if (!theForm) {
+    theForm = document.form2;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="/NOM2026/WebResource.axd?d=pynGkmcFUV13He1Qd6_TZIJHutXs_HwcNHFdEQXNnhbNl1bqggU9vBa1t_9k9_w_OLxB0tJsgmv8vI38ZsMC0w2&amp;t=638901734248157332" type="text/javascript"></script>
+
+
+<script src="/NOM2026/ScriptResource.axd?d=nnHyWnZ5bTPuYszCeiYmK5FSJ6OG7GRvJvcVZMtiGmIcck4J0VWwmx5obf1IQI9GyzzGIyBA-q7q94GSFeCorBZmgJfYDvhca6aviuMBOAAtLm4P4S6T44aCorXaNiuz9PXFWXbd79HeDBfUS9oWE3DgsU3_HEHhA9rO03uATts1&amp;t=5c0e0825" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="/NOM2026/ScriptResource.axd?d=geiJw278ELCE4oVrRV2zH8akyKauJqmFi-_psKvomxs58cbyP7I74z9Xb98urOhtOsC3q4X9rBAdNGcF6jrj8mVnf667i9ABu37oURIROYVQTOJFHwtKrMfsOMf13tw7z2KgvnH-L_w9HtJVk1oY2YnvtI5zDQ0pRSOVzZL3Sk8L-ysnwwen7xdzQGZNi2zA0&amp;t=5c0e0825" type="text/javascript"></script>
+<div class="aspNetHidden">
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="FFB6887A" />
+	<input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value="" />
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="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" />
+</div>
+        <div class="container-fluid">
+            <div class="jumbotron">
+                <div id="logo">
+                    <a href="#" class="standard-logo" title="Chief Electoral Officer,Tamil Nadu" data-dark-logo="images/logo.png">
+                        <img src="./SVEEP_files/logo.png" alt="Canvas Logo" style="width: 250px; height: 50px;">
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="topnav">
+
+                <!-- Centered link -->
+                <div class="topnav-centered">
+                    <a href="#home">
+                        <h2>Nomination - Summary</h2>
+                    </a>
+                </div>
+
+                <!-- Left-aligned links (default) -->
+                <a href="public_report.aspx"><i class="fa fa-fw fa-home"></i>Home</a>
+                <a href="affidavit.aspx"  class="active"><i class="fa fa-bar-chart"></i>Report</a>
+                <!-- Right-aligned links -->
+                <div class="topnav-right">
+                    <a id="LinkButton2" href="javascript:history.go(-1)" style="float: right"><i class="fa fa-arrow-left"></i>Back</a>
+                </div>
+
+            </div>
+           
+            <div class="row content">
+
+
+                <div class="col-sm-10">
+                    <small>
+                        Thursday, 09 April 2026</small>
+
+                    <div>
+
+                        <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ScriptManager1', 'form2', [], [], [], 90, '');
+//]]>
+</script>
+
+                        <center>
+             <div id="Panel2" class="panel">
+	
+                        <table style="text-align: center" ><tr >
+                        <td >Select AC Name :</td>
+              <td>
+  
+    
+                    <select name="DropDownList1" id="DropDownList1" class="auto-style1" style="width:200px;">
+		<option value="0">-----SELECT AC-----</option>
+		<option value="1">1 - Gummidipoondi</option>
+		<option value="2">2 - Ponneri (SC)</option>
+		<option value="3">3 - Tiruttani</option>
+		<option value="4">4 - Thiruvallur</option>
+		<option value="5">5 - Poonamallee (SC)</option>
+		<option value="6">6 - Avadi</option>
+		<option value="7">7 - Maduravoyal</option>
+		<option value="8">8 - Ambattur</option>
+		<option value="9">9 - Madavaram</option>
+		<option value="10">10 - Thiruvottiyur</option>
+		<option value="11">11 - Dr.Radhakrishnan Nagar</option>
+		<option value="12">12 - Perambur</option>
+		<option value="13">13 - Kolathur</option>
+		<option value="14">14 - Villivakkam</option>
+		<option value="15">15 - Thiru-Vi-Ka-Nagar (SC)</option>
+		<option value="16">16 - Egmore (SC)</option>
+		<option value="17">17 - Royapuram</option>
+		<option value="18">18 - Harbour</option>
+		<option value="19">19 - Chepauk-Thiruvallikeni</option>
+		<option value="20">20 - Thousand Lights</option>
+		<option value="21">21 - Anna Nagar</option>
+		<option value="22">22 - Virugampakkam</option>
+		<option value="23">23 - Saidapet</option>
+		<option value="24">24 - Thiyagarayanagar</option>
+		<option value="25">25 - Mylapore</option>
+		<option value="26">26 - Velachery</option>
+		<option value="27">27 - Shozhinganallur</option>
+		<option value="28">28 - Alandur</option>
+		<option value="29">29 - Sriperumbudur (SC)</option>
+		<option value="30">30 - Pallavaram</option>
+		<option value="31">31 - Tambaram</option>
+		<option value="32">32 - Chengalpattu</option>
+		<option value="33">33 - Thiruporur</option>
+		<option value="34">34 - Cheyyur (SC)</option>
+		<option value="35">35 - Madurantakam (SC)</option>
+		<option value="36">36 - Uthiramerur</option>
+		<option value="37">37 - Kancheepuram</option>
+		<option value="38">38 - Arakkonam (SC)</option>
+		<option value="39">39 - Sholinghur</option>
+		<option value="40">40 - Katpadi</option>
+		<option value="41">41 - Ranipet</option>
+		<option value="42">42 - Arcot</option>
+		<option value="43">43 - Vellore</option>
+		<option value="44">44 - Anaikattu</option>
+		<option value="45">45 - Kilvaithinankuppam (SC)</option>
+		<option value="46">46 - Gudiyattam (SC)</option>
+		<option value="47">47 - Vaniyambadi</option>
+		<option value="48">48 - Ambur</option>
+		<option value="49">49 - Jolarpet</option>
+		<option value="50">50 - Tirupattur</option>
+		<option value="51">51 - Uthangarai (SC)</option>
+		<option value="52">52 - Bargur</option>
+		<option value="53">53 - Krishnagiri</option>
+		<option value="54">54 - Veppanahalli</option>
+		<option value="55">55 - Hosur</option>
+		<option value="56">56 - Thalli</option>
+		<option value="57">57 - Palacodu</option>
+		<option value="58">58 - Pennagaram</option>
+		<option value="59">59 - Dharmapuri</option>
+		<option value="60">60 - Pappireddipatti</option>
+		<option value="61">61 - Harur (SC)</option>
+		<option value="62">62 - Chengam(SC)</option>
+		<option value="63">63 - Tiruvannamalai</option>
+		<option value="64">64 - Kilpennathur</option>
+		<option value="65">65 - Kalasapakkam</option>
+		<option value="66">66 - Polur</option>
+		<option value="67">67 - Arani</option>
+		<option value="68">68 - Cheyyar</option>
+		<option value="69">69 - Vandavasi (SC)</option>
+		<option value="70">70 - Gingee</option>
+		<option value="71">71 - Mailam</option>
+		<option value="72">72 - Tindivanam (SC)</option>
+		<option value="73">73 - Vanur (SC)</option>
+		<option value="74">74 - Viluppuram</option>
+		<option value="75">75 - Vikravandi</option>
+		<option value="76">76 - Tirukkoyilur</option>
+		<option value="77">77 - Ulundurpettai</option>
+		<option value="78">78 - Rishivandiyam</option>
+		<option value="79">79 - Sankarapuram</option>
+		<option value="80">80 - Kallakurichi (SC)</option>
+		<option value="81">81 - Gangavalli (SC)</option>
+		<option value="82">82 - Attur (SC)</option>
+		<option value="83">83 - Yercaud (ST)</option>
+		<option value="84">84 - Omalur</option>
+		<option value="85">85 - Mettur</option>
+		<option value="86">86 - Edappadi</option>
+		<option value="87">87 - Sankari</option>
+		<option value="88">88 - Salem (West)</option>
+		<option value="89">89 - Salem (North)</option>
+		<option value="90">90 - Salem (South)</option>
+		<option value="91">91 - Veerapandi</option>
+		<option value="92">92 - Rasipuram (SC)</option>
+		<option value="93">93 - Senthamangalam (ST)</option>
+		<option value="94">94 - Namakkal</option>
+		<option value="95">95 - Paramathi-Velur</option>
+		<option value="96">96 - Tiruchengodu</option>
+		<option value="97">97 - Kumarapalayam</option>
+		<option value="98">98 - Erode (East)</option>
+		<option value="99">99 - Erode (West)</option>
+		<option value="100">100 - Modakkurichi</option>
+		<option value="101">101 - Dharapuram (SC)</option>
+		<option value="102">102 - Kangayam</option>
+		<option value="103">103 - Perundurai</option>
+		<option value="104">104 - Bhavani</option>
+		<option value="105">105 - Anthiyur</option>
+		<option value="106">106 - Gobichettipalayam</option>
+		<option value="107">107 - Bhavanisagar (SC)</option>
+		<option value="108">108 - Udhagamandalam</option>
+		<option value="109">109 - Gudalur (SC)</option>
+		<option value="110">110 - Coonoor</option>
+		<option value="111">111 - Mettuppalayam</option>
+		<option value="112">112 - Avanashi (SC)</option>
+		<option value="113">113 - Tiruppur (North)</option>
+		<option value="114">114 - Tiruppur (South)</option>
+		<option value="115">115 - Palladam</option>
+		<option value="116">116 - Sulur</option>
+		<option value="117">117 - Kavundampalayam</option>
+		<option value="118">118 - Coimbatore (North)</option>
+		<option value="119">119 - Thondamuthur</option>
+		<option value="120">120 - Coimbatore (South)</option>
+		<option value="121">121 - Singanallur</option>
+		<option value="122">122 - Kinathukadavu</option>
+		<option value="123">123 - Pollachi</option>
+		<option value="124">124 - Valparai (SC)</option>
+		<option value="125">125 - Udumalaipettai</option>
+		<option value="126">126 - Madathukulam</option>
+		<option value="127">127 - Palani</option>
+		<option value="128">128 - Oddanchatram</option>
+		<option value="129">129 - Athoor</option>
+		<option value="130">130 - Nilakkottai (SC)</option>
+		<option value="131">131 - Natham</option>
+		<option value="132">132 - Dindigul</option>
+		<option value="133">133 - Vedasandur</option>
+		<option value="134">134 - Aravakurichi</option>
+		<option value="135">135 - Karur</option>
+		<option value="136">136 - Krishnarayapuram (SC)</option>
+		<option value="137">137 - Kulithalai</option>
+		<option value="138">138 - Manapparai</option>
+		<option value="139">139 - Srirangam</option>
+		<option value="140">140 - Tiruchirappalli (West)</option>
+		<option value="141">141 - Tiruchirappalli (East)</option>
+		<option value="142">142 - Thiruverumbur</option>
+		<option value="143">143 - Lalgudi</option>
+		<option value="144">144 - Manachanallur</option>
+		<option value="145">145 - Musiri</option>
+		<option value="146">146 - Thuraiyur (SC)</option>
+		<option value="147">147 - Perambalur (SC)</option>
+		<option value="148">148 - Kunnam</option>
+		<option value="149">149 - Ariyalur</option>
+		<option value="150">150 - Jayankondam</option>
+		<option value="151">151 - Tittakudi (SC)</option>
+		<option value="152">152 - Vriddhachalam</option>
+		<option value="153">153 - Neyveli</option>
+		<option value="154">154 - Panruti</option>
+		<option value="155">155 - Cuddalore</option>
+		<option value="156">156 - Kurinjipadi</option>
+		<option value="157">157 - Bhuvanagiri</option>
+		<option value="158">158 - Chidambaram</option>
+		<option value="159">159 - Kattumannarkoil (SC)</option>
+		<option value="160">160 - Sirkazhi (SC)</option>
+		<option value="161">161 - Mayiladuthurai</option>
+		<option value="162">162 - Poompuhar</option>
+		<option value="163">163 - Nagapattinam</option>
+		<option value="164">164 - Kilvelur (SC)</option>
+		<option value="165">165 - Vedaranyam</option>
+		<option value="166">166 - Thiruthuraipoondi (SC)</option>
+		<option value="167">167 - Mannargudi</option>
+		<option value="168">168 - Thiruvarur</option>
+		<option value="169">169 - Nannilam</option>
+		<option value="170">170 - Thiruvidaimarudur (SC)</option>
+		<option value="171">171 - Kumbakonam</option>
+		<option value="172">172 - Papanasam</option>
+		<option value="173">173 - Thiruvaiyaru</option>
+		<option value="174">174 - Thanjavur</option>
+		<option value="175">175 - Orathanadu</option>
+		<option value="176">176 - Pattukkottai</option>
+		<option value="177">177 - Peravurani</option>
+		<option value="178">178 - Gandarvakkottai (SC)</option>
+		<option value="179">179 - Viralimalai</option>
+		<option value="180">180 - Pudukkottai</option>
+		<option value="181">181 - Thirumayam</option>
+		<option value="182">182 - Alangudi</option>
+		<option value="183">183 - Aranthangi</option>
+		<option value="184">184 - Karaikudi</option>
+		<option value="185">185 - Tiruppattur</option>
+		<option value="186">186 - Sivaganga</option>
+		<option value="187">187 - Manamadurai (SC)</option>
+		<option value="188">188 - Melur</option>
+		<option value="189">189 - Madurai East</option>
+		<option value="190">190 - Sholavandan (SC)</option>
+		<option value="191">191 - Madurai North</option>
+		<option value="192">192 - Madurai South</option>
+		<option value="193">193 - Madurai Central</option>
+		<option value="194">194 - Madurai West</option>
+		<option value="195">195 - Thiruparankundram</option>
+		<option value="196">196 - Thirumangalam</option>
+		<option value="197">197 - Usilampatti</option>
+		<option value="198">198 - Andipatti</option>
+		<option value="199">199 - Periyakulam (SC)</option>
+		<option value="200">200 - Bodinayakanur</option>
+		<option value="201">201 - Cumbum</option>
+		<option value="202">202 - Rajapalayam</option>
+		<option value="203">203 - Srivilliputhur (SC)</option>
+		<option value="204">204 - Sattur</option>
+		<option value="205">205 - Sivakasi</option>
+		<option value="206">206 - Virudhunagar</option>
+		<option value="207">207 - Aruppukkottai</option>
+		<option value="208">208 - Tiruchuli</option>
+		<option value="209">209 - Paramakudi (SC)</option>
+		<option value="210">210 - Tiruvadanai</option>
+		<option value="211">211 - Ramanathapuram</option>
+		<option value="212">212 - Mudhukulathur</option>
+		<option value="213">213 - Vilathikulam</option>
+		<option value="214">214 - Thoothukkudi</option>
+		<option value="215">215 - Tiruchendur</option>
+		<option value="216">216 - Srivaikuntam</option>
+		<option value="217">217 - Ottapidaram (SC)</option>
+		<option value="218">218 - Kovilpatti</option>
+		<option value="219">219 - Sankarankovil (SC)</option>
+		<option value="220">220 - Vasudevanallur (SC)</option>
+		<option value="221">221 - Kadayanallur</option>
+		<option value="222">222 - Tenkasi</option>
+		<option value="223">223 - Alangulam</option>
+		<option value="224">224 - Tirunelveli</option>
+		<option value="225">225 - Ambasamudram</option>
+		<option value="226">226 - Palayamkottai</option>
+		<option value="227">227 - Nanguneri</option>
+		<option value="228">228 - Radhapuram</option>
+		<option value="229">229 - Kanniyakumari</option>
+		<option value="230">230 - Nagercoil</option>
+		<option value="231">231 - Colachal</option>
+		<option value="232">232 - Padmanabhapuram</option>
+		<option value="233">233 - Vilavancode</option>
+		<option value="234">234 - Killiyoor</option>
+
+	</select>
+            
+              </td>
+                     
+                        <td >Date :</td>
+              <td>
+                  
+                  <select name="DropDownList2" id="DropDownList2" class="auto-style1" style="width:200px;">
+		<option value="0">----Select----</option>
+		<option value="30-03-2026">30-03-2026</option>
+		<option value="02-04-2026">02-04-2026</option>
+		<option value="04-04-2026">04-04-2026</option>
+		<option value="06-04-2026">06-04-2026</option>
+
+	</select>
+ 
+                  
+  
+              </td>                 <td > <input type="submit" name="Button1" value="Go" id="Button1" class="btn-success" /><td>
+                            </tr>
+
+                        </table>
+                 <br />    <br />
+                 <div>
+		<table class="p" cellspacing="2" cellpadding="4" rules="all" id="GridView1" style="color:Black;background-color:#CCCCCC;border-color:#999999;border-width:3px;border-style:Solid;">
+			<tr style="color:White;background-color:Black;font-weight:bold;">
+				<th scope="col" style="width:10%;">AC Name </th><th scope="col" style="width:10%;">Name of the Candidate</th><th scope="col" style="width:10%;">Gender</th><th scope="col" style="width:10%;">Party Affiliation</th><th scope="col" style="width:10%;">No. of Nomination</th><th scope="col" style="width:10%;">Date of Nomination</th>
+			</tr><tr style="background-color:White;">
+				<td>1-GUMMIDIPOONDI</td><td>M.JAGADEESAN</td><td align="center">Male</td><td>Bahujan Samaj Party</td><td align="center">1</td><td align="center">30-03-2026</td>
+			</tr><tr style="background-color:White;">
+				<td>1-GUMMIDIPOONDI</td><td>R.SRIDAR. B.L.</td><td align="center">Male</td><td>Naam Tamilar Katchi</td><td align="center">1</td><td align="center">30-03-2026</td>
+			</tr><tr style="background-color:White;">
+				<td>1-GUMMIDIPOONDI</td><td>U.PRATHAP</td><td align="center">Male</td><td>Naam Tamilar Katchi</td><td align="center">1</td><td align="center">30-03-2026</td>
+			</tr>
+		</table>
+	</div><span id="Label1" class="text-warning"></span>
+                      
+</div>
+                            </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+         
+         <footer class="container-fluid">
+            <p>© 2019 Public (Elections) Department, Tamil Nadu. All rights reserved</p>
+        </footer>
+    </form>
+</body>
+</html>
+

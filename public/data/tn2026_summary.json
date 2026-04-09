@@ -1,0 +1,34 @@
+{
+  "total_candidates": 6057,
+  "constituencies_covered": 234,
+  "total_constituencies": 234,
+  "candidates_by_party": {
+    "IND": 3136,
+    "Others": 1010,
+    "NTK": 464,
+    "TVK": 398,
+    "DMK": 342,
+    "AIADMK": 339,
+    "BSP": 146,
+    "BJP": 61,
+    "INC": 57,
+    "PMK": 34,
+    "CPI": 26,
+    "DMDK": 18,
+    "VCK": 14,
+    "CPI(M)": 10,
+    "IUML": 2
+  },
+  "candidates_by_district": {
+    "": 6057
+  },
+  "gender_distribution": {
+    "M": 5045,
+    "F": 1010,
+    "O": 2,
+    "Unknown": 0
+  },
+  "avg_assets_total": 0,
+  "candidates_with_criminal_cases": 0,
+  "criminal_percentage": 0.0
+}
