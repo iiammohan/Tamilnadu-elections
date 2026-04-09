@@ -12,6 +12,9 @@ __pycache__/
 # --- Vercel local state ---
 .vercel/
 
+# --- Archive folder (local dev assets, not for deployment) ---
+archive/
+
 # --- Legacy root scripts (now in archive/tooling/) ---
 parsed_data.json
 update_data.py
