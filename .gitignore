@@ -1,7 +1,31 @@
+# --- Dependencies & environments ---
 node_modules/
+.venv/
+venv/
+
+# --- Python cache ---
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# --- Vercel local state ---
+.vercel/
+
+# --- Legacy root scripts (now in archive/tooling/) ---
 parsed_data.json
 update_data.py
 verify_data.py
 extract_data.py
-__pycache__/
-.vercel
+
+# --- Data pipeline temp/cache files ---
+tmp_*.html
+tmp_*.txt
+tmp_*.json
+
+# --- Local dev server artifacts ---
+*.log
+
+# --- OS artifacts ---
+.DS_Store
+Thumbs.db
