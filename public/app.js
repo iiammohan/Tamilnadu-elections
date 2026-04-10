@@ -991,7 +991,7 @@ function _candidateMatchesParty(cand, partyCode) {
 function _candidateCompleteness(cand) {
   if (!cand) return 0;
   let score = 0;
-  if (cand.affidavit_pdf_url) score += 4;
+  if (cand.profile_url || cand.affidavit_pdf_url) score += 4;
   if (cand.photo_url) score += 2;
   if (cand.age != null) score += 1;
   return score;
@@ -1187,6 +1187,17 @@ function _symbolImg(url, size, cls) {
 }
 
 function _affidavitUrl(cand) {
+  const profileRaw = cand && typeof cand.profile_url === 'string' ? cand.profile_url.trim() : '';
+  if (profileRaw) {
+    try {
+      const profileUrl = new URL(profileRaw);
+      if (/affidavit\.eci\.gov\.in$/i.test(profileUrl.hostname) && /\/show-profile\//i.test(profileUrl.pathname)) {
+        return profileUrl.toString();
+      }
+    } catch {
+      // Fall back to the legacy PDF token URL below.
+    }
+  }
   const raw = cand && typeof cand.affidavit_pdf_url === 'string' ? cand.affidavit_pdf_url.trim() : '';
   if (!raw) return null;
   try {
@@ -1376,7 +1387,7 @@ function openCandidateModal(cand) {
 
   let affidavitHTML = '';
   if (hasAffidavit) {
-    affidavitHTML = `<div class="cm-section" style="text-align:center"><a href="${affidavitUrl}" target="_blank" rel="noopener" class="party-badge" style="background:var(--accent);color:#fff;text-decoration:none;padding:0.4rem 1rem;font-size:0.85rem">${ta ? TAMIL.view_affidavit : 'View Affidavit PDF'}</a></div>`;
+    affidavitHTML = `<div class="cm-section" style="text-align:center"><a href="${affidavitUrl}" target="_blank" rel="noopener" class="party-badge" style="background:var(--accent);color:#fff;text-decoration:none;padding:0.4rem 1rem;font-size:0.85rem">${ta ? TAMIL.view_affidavit : 'View Affidavit'}</a></div>`;
   }
 
   mc.innerHTML = `
