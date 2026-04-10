@@ -1,7 +1,80 @@
 /* === TN Elections 2026 Dashboard — App Logic === */
 
 /* === Language System === */
-let currentLang = localStorage.getItem('tneLang') || 'en';
+const ALLOWED_LANGS = new Set(['en', 'ta']);
+
+function normalizeLanguage(lang) {
+  return ALLOWED_LANGS.has(lang) ? lang : 'en';
+}
+
+let currentLang = normalizeLanguage(localStorage.getItem('tneLang'));
+
+const SAFE_IMAGE_HOST_PATTERNS = [
+  /(^|\.)suvidha\.eci\.gov\.in$/i,
+  /(^|\.)affidavit\.eci\.gov\.in$/i,
+];
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function normalizeSearchQuery(query, maxLen = 100) {
+  return String(query || '').trim().slice(0, maxLen).toLowerCase();
+}
+
+function safeHttpsUrl(raw, hostPatterns, pathPattern) {
+  if (typeof raw !== 'string' || !raw.trim()) return null;
+  try {
+    const parsed = new URL(raw.trim(), window.location.origin);
+    if (parsed.protocol !== 'https:') return null;
+    if (hostPatterns && !hostPatterns.some((pattern) => pattern.test(parsed.hostname))) return null;
+    if (pathPattern && !pathPattern.test(parsed.pathname)) return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
+function safeImageUrl(raw) {
+  return safeHttpsUrl(raw, SAFE_IMAGE_HOST_PATTERNS);
+}
+
+function bindDynamicContent(scope = document) {
+  scope.querySelectorAll('[data-candidate-id]').forEach((el) => {
+    el.onclick = () => {
+      const cand = _candLookup[el.dataset.candidateId];
+      if (cand) openCandidateModal(cand);
+    };
+  });
+
+  scope.querySelectorAll('[data-affidavit-url]').forEach((el) => {
+    el.onclick = () => openAffidavitUrl(el.dataset.affidavitUrl);
+  });
+
+  scope.querySelectorAll('img[data-fallback-kind]').forEach((img) => {
+    img.onerror = () => {
+      if (img.dataset.fallbackKind === 'hide') {
+        img.remove();
+        return;
+      }
+      const placeholder = document.createElement('span');
+      placeholder.className = img.dataset.fallbackClass || '';
+      const size = img.dataset.fallbackSize;
+      if (size) {
+        placeholder.style.width = `${size}px`;
+        placeholder.style.height = `${size}px`;
+      }
+      if (img.dataset.fallbackBorderColor) placeholder.style.borderColor = img.dataset.fallbackBorderColor;
+      placeholder.textContent = img.dataset.fallbackText || '👤';
+      img.replaceWith(placeholder);
+    };
+  });
+}
 
 /* Party Tamil abbreviations & full names — official/standard usage */
 const PARTY_TAMIL = {
@@ -388,6 +461,29 @@ const TAMIL = {
   mf_category: 'வகை',
   mf_policy_area: 'கொள்கைப் பகுதி',
   mf_no_promise: 'குறிப்பிட்ட உறுதிமொழி இல்லை',
+  mf_audit_tab: 'முந்தைய கால ஆய்வுகள்',
+  mf_audit_title: 'முந்தைய கால தேர்தல் அறிக்கை ஆய்வுகள்',
+  mf_audit_desc: '2021 மற்றும் 2016 முந்தைய கால தேர்தல் அறிக்கை ஆய்வுகளை ஆதார அடிப்படையில், உறுதி நிலை மற்றும் செயலாக்க பகுப்பாய்வுடன் பாருங்கள்.',
+  mf_audit_year: 'தேர்தல் அறிக்கை ஆண்டு',
+  mf_audit_category: 'வகை',
+  mf_audit_promise: 'உறுதி / வாக்குறுதி',
+  mf_audit_status: 'நிலை',
+  mf_audit_confidence: 'நம்பிக்கை',
+  mf_audit_sources: 'மூலங்கள்',
+  mf_audit_evidence: 'ஆதார குறிப்பு',
+  mf_audit_chart_title: 'நிலைப் பகுப்பு (தேர்ந்த ஆண்டு)',
+  mf_audit_method_title: 'ஆதார முறை & மூலத் தேர்வு',
+  mf_audit_validation_title: 'தரவு சரிபார்ப்பு குறிப்புகள்',
+  mf_audit_source_names: 'பயன்படுத்தப்பட்ட தரவு ஆதாரங்கள்',
+  mf_audit_why_not_fulfilled: '2021 இல் நிறைவேறாதவை ஏன் அதிகம்?',
+  mf_audit_primary_source: 'முதன்மை மதிப்பீட்டு மூலம்',
+  mf_audit_why_primary: 'ஏன் இது முதன்மை மதிப்பீட்டாக பயன்படுத்தப்பட்டது',
+  mf_audit_verification_rule: 'சரிபார்ப்பு விதி',
+  mf_audit_term_analysis: 'ஆட்சிக்கால சுருக்கம்',
+  mf_audit_popular_done: 'மிக அதிகம் காணப்பட்ட / வெற்றிகரமான நடைமுறைத் திட்டங்கள்',
+  mf_audit_non_manifesto: 'அறிக்கையில் இல்லை, ஆனால் ஆட்சிக்காலத்தில் அறிமுகமான திட்டங்கள்',
+  mf_audit_compare_takeaways: '2026 அதே கட்சியின் தேர்தல் அறிக்கையுடன் ஒப்பிடுகையில்',
+  mf_audit_conservative_note: 'பாதுகாப்பு குறிப்பு',
 
   // Parties
   parties_alliances: 'கட்சிகள் & கூட்டணிகள்',
@@ -644,8 +740,8 @@ const REGIONS = {
 };
 
 function setLanguage(lang) {
-  currentLang = lang;
-  localStorage.setItem('tneLang', lang);
+  currentLang = normalizeLanguage(lang);
+  localStorage.setItem('tneLang', currentLang);
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
@@ -679,6 +775,9 @@ function setLanguage(lang) {
   if (chartsBuilt) rebuildGenderChart();
   // Translate manifesto static content
   translateManifestoContent();
+  // Refresh manifesto audit labels/status text for active language
+  const auditYearEl = document.getElementById('manifestoAuditYear');
+  if (auditYearEl) renderManifestoAudit(auditYearEl.value || '2021');
   // Rebuild results tab if rendered
   if (resultsBuilt) rebuildResults();
   // Rebuild candidates table if built
@@ -727,7 +826,7 @@ if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
 }
 // Init language from storage
 (function() {
-  const saved = localStorage.getItem('tneLang');
+  const saved = normalizeLanguage(localStorage.getItem('tneLang'));
   if (saved && saved !== 'en') {
     currentLang = saved;
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === saved));
@@ -749,6 +848,10 @@ function switchTab(tab) {
   }
   if (tab === 'parties' && !partiesRendered) { renderPartyCards(); renderAlliances(); partiesRendered = true; }
   if (tab === 'results' && !resultsBuilt) buildResults();
+
+  if (tab === 'table' || tab === 'overview') {
+    ensureCandidateDataLoaded();
+  }
 }
 
 function switchManifestoTab(sub) {
@@ -756,95 +859,682 @@ function switchManifestoTab(sub) {
   document.querySelectorAll('.manifesto-section').forEach(s => s.classList.remove('active'));
   document.querySelector(`.manifesto-subtab[onclick*="${sub}"]`).classList.add('active');
   document.getElementById(`manifesto-${sub}`).classList.add('active');
+  if (sub === 'audit') {
+    const yearEl = document.getElementById('manifestoAuditYear');
+    renderManifestoAudit(yearEl ? yearEl.value : '2021');
+  }
+}
+
+function getEvidenceSourceTags(evidence) {
+  const text = (evidence || '').toLowerCase();
+  const tags = [];
+
+  if (/south first/.test(text)) tags.push('South First');
+  if (/the hindu|hindu/.test(text)) tags.push('The Hindu');
+  if (/news18/.test(text)) tags.push('News18');
+  if (/news minute|tnm/.test(text)) tags.push('The News Minute');
+  if (/new indian express|n\.i\.e/.test(text)) tags.push('NIE');
+  if (/the week/.test(text)) tags.push('The Week');
+  if (/official|portal|g\.o\.|go\.|gazette|tnerc|assembly|arasubus|aavin|kmut/.test(text)) tags.push('Official');
+
+  if (!tags.length) tags.push('Mixed/Other');
+  return [...new Set(tags)];
+}
+
+const MANIFESTO_AUDIT_DATA = {
+  '2021': {
+    party: 'DMK',
+    totalPromises: 505,
+    strictRange: '364 to 394 completed',
+    strictPercent: '72.08% to 78.02%',
+    estimateNote: 'Promise-level audit from South First (April 2026 independent analysis) and official government portals. Lower bound 364/505 per DMK report to The Hindu (Jan 2026); upper bound 394/505 per South First independent count (Apr 2026).',
+    rows: [
+      { category: 'Women', promise: 'Free bus travel for women in state-run urban and suburban buses', status: 'Fulfilled', confidence: 'High', evidence: 'South First (2 analyses, Apr 2026): Flagship fulfilled promise. Official ArasuBus portal: ~41 lakh women riders/day under Vidiyal Payanam Scheme.' },
+      { category: 'Prices', promise: 'Reduce Aavin milk prices by Rs 3 per litre', status: 'Fulfilled', confidence: 'High', evidence: 'South First (2 analyses): Rs 3/litre reduction identified as implemented from 16.05.2021. Confirmed by official Aavin portal.' },
+      { category: 'Welfare', promise: 'Rs 1,000 monthly assistance for eligible women heads of households (KMUT)', status: 'Fulfilled', confidence: 'High', evidence: 'South First (2 analyses): Implemented through Kalaignar Magalir Urimai Thogai, rollout to ~1.31 crore beneficiaries confirmed.' },
+      { category: 'Women', promise: 'Rs 4,000 Covid cash relief for ration card holders', status: 'Fulfilled', confidence: 'Medium', evidence: 'South First (2 analyses): Described as a first-wave fulfilled assurance delivered after taking office.' },
+      { category: 'Women', promise: 'Increase reservation for women in government jobs from 30% to 40%', status: 'Fulfilled', confidence: 'Medium', evidence: 'South First: Listed as implemented under women welfare sector.' },
+      { category: 'Women', promise: 'Extend maternity leave for women employees from 9 months to 12 months', status: 'Fulfilled', confidence: 'Medium', evidence: 'South First: Reported as implemented through legal provision.' },
+      { category: 'Women', promise: 'Set up working women hostels in all districts', status: 'Fulfilled', confidence: 'Medium', evidence: 'South First: Reported as implemented.' },
+      { category: 'Religion', promise: 'Allocate Rs 1,000 crore for temple renovation', status: 'Fulfilled or substantially fulfilled', confidence: 'Medium', evidence: 'South First: Reported as allocated and acted upon; full expenditure closure not independently audited.' },
+      { category: 'Prices', promise: 'Reduce petrol by Rs 5 and diesel by Rs 4', status: 'Partially fulfilled', confidence: 'High', evidence: 'South First: Only Rs 3 petrol and Rs 2 diesel cuts achieved — below both target values.' },
+      { category: 'Governance', promise: 'Live-stream Assembly proceedings for transparency', status: 'Partially fulfilled', confidence: 'Medium', evidence: 'South First: Live-streaming exists but opposition speeches are cut; only partially fulfilled.' },
+      { category: 'Protest Rights', promise: 'Withdraw cases against Sterlite, hydrocarbon, methane, Kudankulam protesters', status: 'Partially fulfilled', confidence: 'Medium', evidence: 'South First: Several cases remain pending and fresh cases were filed after 2021.' },
+      { category: 'Urban Dev', promise: 'Establish Semmozhi Poongas in all municipal corporations', status: 'Partially fulfilled', confidence: 'Medium', evidence: 'South First: Only Coimbatore cited as delivered during the term.' },
+      { category: 'Prices', promise: 'Reduce LPG cylinder price / give LPG subsidy (Rs 100 per cylinder)', status: 'Not fulfilled', confidence: 'High', evidence: 'South First (2 analyses): LPG subsidy / price reduction not implemented.' },
+      { category: 'Education', promise: 'Student education loan waiver for eligible youth', status: 'Not fulfilled', confidence: 'High', evidence: 'South First (2 analyses): Both analyses identify as unfulfilled / stalled.' },
+      { category: 'Employment', promise: '75% reservation for Tamil Nadu residents in private sector employment', status: 'Not fulfilled', confidence: 'High', evidence: 'South First (2 analyses): Described as aspirational / not materialised.' },
+      { category: 'Women', promise: 'Increase financial assistance under marriage assistance schemes', status: 'Not fulfilled', confidence: 'High', evidence: 'South First: Promises 255–259 tracked as largely not implemented.' },
+      { category: 'Women', promise: 'Government jobs for unmarried women above age 35 based on qualification', status: 'Not fulfilled', confidence: 'Medium', evidence: 'South First: Explicitly identified as unfulfilled promise #262.' },
+      { category: 'Taxation', promise: 'Do not increase property tax until Covid effects subside', status: 'Not fulfilled', confidence: 'Medium', evidence: 'South First: Property tax was raised in 2022 despite promise #487.' },
+      { category: 'Employment', promise: 'Reserve 100% of government and public sector jobs for Tamil Nadu youth', status: 'Not fulfilled', confidence: 'Medium', evidence: 'South First: Identified as promise #495 — not materialised.' },
+      { category: 'Education', promise: 'Regularise part-time art, music and physical education teachers', status: 'Not fulfilled', confidence: 'Medium', evidence: 'South First: Identified as promise #181 — still pending.' },
+      { category: 'Pensions', promise: 'Implement old pension scheme for transport workers', status: 'Not fulfilled', confidence: 'Medium', evidence: 'South First: Not implemented; TAPS not extended to transport workers.' },
+      { category: 'Governance', promise: 'Revive the Tamil Nadu Legislative Council', status: 'Not fulfilled', confidence: 'Medium', evidence: 'South First: Listed among unfulfilled institutional reform commitments.' },
+      { category: 'Sports', promise: 'Provide monthly assistance to Jallikattu participants', status: 'Not fulfilled', confidence: 'Low', evidence: 'South First: Mentioned in unfulfilled list; requires stronger secondary corroboration.' }
+    ]
+  },
+  '2016': {
+    party: 'AIADMK',
+    totalPromises: null,
+    strictRange: 'No single audited aggregate available',
+    strictPercent: 'Directional sample: 40.91% strict to 57.50% conservative',
+    estimateNote: 'Promise-level audit from The Hindu (Mar 2021), News18 (Mar 2021), and The News Minute (Mar 2021) status checks. G.O. references used for verified implementation. No single cross-sectoral completion count from any source.',
+    rows: [
+      { category: 'Agriculture', promise: 'Waive outstanding cooperative crop loans as on 31.03.2016', status: 'Fulfilled', confidence: 'High', evidence: 'Official G.O.s CFCP 50/2016 and 59/2016 issued; News18 confirms immediate post-oath action; Supreme Court stay later confirms significance.' },
+      { category: 'Power', promise: 'Provide 100 free units of electricity every two months to all domestic consumers', status: 'Fulfilled', confidence: 'High', evidence: 'News18: immediate order issued; TNERC order cites G.O.(Ms) No.102 dated 23-05-2016; policy continuity confirmed.' },
+      { category: 'Women', promise: '50% subsidy up to Rs 20,000 for working women to buy scooters', status: 'Fulfilled', confidence: 'High', evidence: 'The Hindu (manifesto coverage) & News18: order passed soon after assuming office.' },
+      { category: 'Women', promise: 'Increase maternity assistance from Rs 12,000 to Rs 18,000', status: 'Fulfilled', confidence: 'High', evidence: 'News18 explicitly identifies as fulfilled.' },
+      { category: 'Fisherfolk', promise: 'Construct 5,000 houses for fishermen', status: 'Fulfilled', confidence: 'Medium', evidence: 'News18 reports as fulfilled; independent secondary source not captured.' },
+      { category: 'Education', promise: 'Free laptops for students', status: 'Fulfilled', confidence: 'Medium', evidence: 'News18 reports as fulfilled at scale; independent secondary source not captured.' },
+      { category: 'Water', promise: 'Cauvery Water Management Board / Authority implementation', status: 'Fulfilled', confidence: 'High', evidence: 'The News Minute: Fulfilled after Union notification of the authority in 2018 following litigation.' },
+      { category: 'Water', promise: 'Prevent Karnataka from constructing Mekedatu dam', status: 'Fulfilled', confidence: 'Medium', evidence: 'The News Minute (limited sense): No environmental clearance issued as of report date — promise outcome achieved.' },
+      { category: 'Transport', promise: 'Metro extension to Airport and Washermanpet to Wimco Nagar (Chennai)', status: 'Fulfilled', confidence: 'High', evidence: 'The News Minute explicitly marks this promise fulfilled.' },
+      { category: 'Connectivity', promise: 'Free Wi-Fi in public places', status: 'Partially fulfilled', confidence: 'High', evidence: 'The Hindu & News18: Only limited Amma Free Wi-Fi zones launched in 5 cities.' },
+      { category: 'Liquor', promise: 'Phased prohibition and closure of TASMAC shops', status: 'Partially fulfilled', confidence: 'High', evidence: 'The Hindu & News18: ~500 shops closed, numbers reduced — but full prohibition not implemented.' },
+      { category: 'Water', promise: 'Protected agricultural zone / no methane or shale gas projects in delta', status: 'Partially fulfilled', confidence: 'High', evidence: 'The News Minute: Protected agricultural zone declared; unresolved questions remain for ongoing projects.' },
+      { category: 'Infrastructure', promise: 'Monorail in Chennai, Madurai, Trichy and Coimbatore', status: 'Partially fulfilled', confidence: 'High', evidence: 'The News Minute explicitly marks partially fulfilled.' },
+      { category: 'Connectivity', promise: 'Free cell phones for ration card holders', status: 'Not fulfilled', confidence: 'High', evidence: 'The Hindu & News18 both identify as remaining on paper.' },
+      { category: 'Governance', promise: 'Amma banking card for the poor to avail state services', status: 'Not fulfilled', confidence: 'High', evidence: 'The Hindu & News18: had not reached the ground.' },
+      { category: 'Water', promise: 'Increase Mullaiperiyar dam level to 152 feet', status: 'Not fulfilled', confidence: 'High', evidence: 'The News Minute explicitly marks this not fulfilled.' },
+      { category: 'Water', promise: 'Implement Pamba-Achankovil-Vaipaaru river linking project', status: 'Not fulfilled', confidence: 'High', evidence: 'The News Minute marks promise as not fulfilled.' },
+      { category: 'Infrastructure', promise: 'Elevated highway from Meenambakkam to Chengalpattu', status: 'Not fulfilled', confidence: 'High', evidence: 'The News Minute explicitly marks not fulfilled.' },
+      { category: 'Infrastructure', promise: 'Athikadavu-Avinashi irrigation project', status: 'Project launched', confidence: 'Medium', evidence: 'The News Minute: "Project launched" — foundation stone laid; full delivery not achieved.' },
+      { category: 'Water', promise: 'Link Cauvery-Vaigai-Mahanadhi-Godavari-Krishna-Gundaru rivers', status: 'Project launched', confidence: 'High', evidence: 'The News Minute: Foundation stone laid in 2021; classified as "project launched" not fulfilled.' },
+      { category: 'Infrastructure', promise: 'Stormwater drains in Greater Chennai Corporation limits', status: 'Project launched', confidence: 'Medium', evidence: 'The News Minute: "Project underway" — not at fulfilled status.' },
+      { category: 'Infrastructure', promise: 'Convert Cuddalore harbour into a deep-sea harbour', status: 'Permission for project granted', confidence: 'Medium', evidence: 'The News Minute: Union nod and CRZ clearance reported; commissioning status remains separate.' }
+    ]
+  }
+};
+
+const MANIFESTO_AUDIT_METHOD = {
+  '2021': {
+    primarySource: 'South First (Apr 2026 promise-level independent audit)',
+    whyPrimary: 'Used as the primary aggregate evaluator because it publishes the cleanest mathematically consistent public count, 394 of 505, and makes promise-level status judgments. It is not treated as sole truth.',
+    sourceNames: ['South First', 'The Hindu', 'Tamil Nadu Government Portals', 'Aavin', 'ArasuBus', 'KMUT Portal', 'TN Legislative Assembly Repository'],
+    verificationRules: [
+      'Lower-bound cross-check comes from The Hindu report of the DMK\'s own Jan 2026 figure: 364 completed and 40 under consideration. This is a floor, not a replacement for itemized audit.',
+      'Scheme-level completion is upgraded only where official state evidence exists. In the current pack, free bus travel, Aavin milk cut, and KMUT have direct official confirmation.',
+      'The 404 completed / nearly 85% political claim is excluded from strict valuation because 404 of 505 is about 80%, not 85%.'
+    ]
+  },
+  '2016': {
+    primarySource: 'Triangulated audit: The Hindu + News18 + The News Minute, backed by official G.O.s where available',
+    whyPrimary: 'No single defensible completed-out-of-total audit exists for AIADMK 2016. The valuation therefore uses source triangulation rather than selecting one media source as absolute truth.',
+    sourceNames: ['The Hindu', 'News18', 'The News Minute', 'Tamil Nadu Government Orders (G.O.)', 'TNERC', 'Tamil Nadu Government Gazette', 'IT Department (Amma Wi-Fi)'],
+    verificationRules: [
+      'Official G.O. or department support is used wherever available: crop-loan waiver, 100 free units electricity, Amma two-wheeler subsidy, maternity assistance enhancement, and Amma Wi-Fi pilot.',
+      'The Hindu and News18 overlap on welfare, connectivity and prohibition items; The News Minute adds a promise-level audit for water and infrastructure.',
+      'Opposition-era political claims about low completion are not used as audited truth unless backed by transparent itemized evidence.'
+    ]
+  }
+};
+
+const MANIFESTO_AUDIT_METHOD_TA = {
+  '2021': {
+    primarySource: 'South First (ஏப்ரல் 2026 உறுதி-நிலை தனித்த ஆய்வு)',
+    whyPrimary: '505 உறுதிமொழிகளில் 394 நிறைவேற்றம் என கணித ரீதியாக அதிகத் தெளிவுடன் வெளியிடப்பட்ட பொது தரவு இதிலிருந்ததால் இதை முதன்மை மதிப்பீடாக எடுத்துள்ளோம். இது ஒரே இறுதி உண்மை அல்ல.',
+    sourceNames: ['South First', 'The Hindu', 'தமிழ்நாடு அரசு தளங்கள்', 'Aavin', 'ArasuBus', 'KMUT தளம்', 'தமிழ்நாடு சட்டமன்ற தரவுத்தளம்'],
+    verificationRules: [
+      'கீழ் வரம்பு சரிபார்ப்பு The Hindu-வில் வெளியான ஜனவரி 2026 DMK கணக்கீட்டிலிருந்து: 364 நிறைவேற்றம், 40 பரிசீலனையில். இது அடிப்படை தரை மட்டுமே; உறுதிமொழி-தர ஆய்வுக்கு மாற்றாக இல்லை.',
+      'அரசு ஆதார சான்று உள்ள இடங்களில் மட்டுமே திட்ட நிறைவேற்ற நிலை உயர்த்தப்படுகிறது. இத்தொகுப்பில் இலவச பேருந்து பயணம், ஆவின் விலை குறைப்பு, KMUT ஆகியவற்றுக்கு நேரடி அதிகாரப்பூர்வ ஆதாரம் உள்ளது.',
+      '404 completed / nearly 85% என்ற அரசியல் கூற்று strict கணக்கில் சேர்க்கப்படவில்லை; 404 / 505 என்பது சுமார் 80% மட்டுமே.'
+    ]
+  },
+  '2016': {
+    primarySource: 'The Hindu + News18 + The News Minute மூலங்களின் இணை-சரிபார்ப்பு, கிடைக்கும் இடங்களில் அதிகாரப்பூர்வ G.O. ஆதாரங்களுடன்',
+    whyPrimary: 'AIADMK 2016 அறிக்கைக்கான completed-out-of-total என ஒரே பாதுகாப்பான மொத்த ஆய்வு இல்லை. அதனால் ஒரே ஊடகத்தை இறுதி உண்மையாக எடுக்காமல், மூல இணை-சரிபார்ப்பு முறை பயன்படுத்தப்படுகிறது.',
+    sourceNames: ['The Hindu', 'News18', 'The News Minute', 'தமிழ்நாடு அரசு ஆணைகள் (G.O.)', 'TNERC', 'தமிழ்நாடு அரசு கசேட்', 'IT துறை (Amma Wi-Fi)'],
+    verificationRules: [
+      'சாத்தியமான இடங்களில் அதிகாரப்பூர்வ ஆவண ஆதாரம் பயன்படுத்தப்பட்டுள்ளது: கூட்டுறவு பயிர் கடன் தள்ளுபடி, 100 யூனிட் இலவச மின்சாரம், அம்மா இருசக்கர மானியம், மகப்பேறு உதவி உயர்வு, Amma Wi-Fi pilot.',
+      'The Hindu மற்றும் News18 நலத்திட்டம், இணைப்பு சேவைகள், மதுவிலக்கு பொருட்களில் ஒத்துப்போகின்றன; The News Minute நீர் மற்றும் உள்கட்டமைப்பு வாக்குறுதிகளுக்கான promise-level audit சேர்க்கிறது.',
+      'அரசியல் எதிர்க்கட்சித் தரப்பு completion குறித்த கூற்றுகள், வெளிப்படையான உருப்படி-அடிப்படையிலான ஆதாரம் இல்லாமல் audit உண்மையாக பயன்படுத்தப்படவில்லை.'
+    ]
+  }
+};
+
+const MANIFESTO_TERM_ANALYSIS = {
+  '2021': {
+    popularDone: [
+      'Vidiyal Payanam free bus travel: official portals describe statewide operation since 2021 and ArasuBus reports roughly 41 lakh women riders per day.',
+      'Kalaignar Magalir Urimai Thogai: high-visibility monthly cash scheme with official portal support and rollout references to about 1.31 crore beneficiaries.',
+      'Aavin milk price cut: a rare price-relief promise implemented exactly at the promised Rs 3 per litre value.'
+    ],
+    nonManifesto: [
+      'Naan Mudhalvan: repeatedly cited as a successful term programme, but the research summary flags it as beyond the original 2021 manifesto mapping, so it is shown separately and not counted as manifesto fulfilment here.',
+      'Chief Minister\'s Breakfast Scheme: widely cited in 2026 campaign coverage, but the current research pack says it should remain outside manifesto-completion scoring unless directly promise-mapped.'
+    ],
+    compareTakeaways: [
+      '2026 DMK keeps the welfare spine of the 2021 term but scales it up: women-focused monthly support is framed as an expansion from Rs 1,000 to Rs 2,000 rather than a new model.',
+      'The 2026 DMK manifesto leans harder into student and youth cash support, breakfast expansion, and investment-led jobs than the audited 2021 record of direct fulfilment on waivers and reservations.',
+      'Reader caution: 2021 items that remained unfulfilled, such as LPG subsidy, education-loan waiver and private-sector reservation, should be treated as delivery-risk indicators when reading 2026 promises.'
+    ],
+    conservativeNote: 'Only two non-manifesto DMK term schemes are listed because they are explicitly identified in the research summary. Additional term schemes should not be added to the audit score without direct manifesto text matching.'
+  },
+  '2016': {
+    popularDone: [
+      'First 100 units of free electricity: strong public-visibility welfare promise with official policy and later TNERC/Gazette continuity references.',
+      'Amma Two-Wheeler subsidy: high-recognition women-support scheme with official Gazette operational proof.',
+      'Maternity assistance enhancement to Rs 18,000: clearly implemented and later restated in official health department orders.',
+      'Crop-loan waiver: politically high-salience farm measure backed by specific government orders.'
+    ],
+    nonManifesto: [
+      'Current research pack does not isolate a high-confidence list of AIADMK 2016-2021 non-manifesto flagship additions. To avoid overstating the record, this audit does not score extra term schemes unless the 2016 manifesto text is separately extracted and checked.'
+    ],
+    compareTakeaways: [
+      '2026 AIADMK returns to the old Amma-brand welfare grammar: household cash, LPG support and subsidised consumer benefits remain central.',
+      'Compared with the 2016 record, the 2026 AIADMK manifesto shifts from one-time benefits and infrastructure commitments toward higher recurring household transfers and stronger price-relief messaging.',
+      'Reader caution: the 2016 record is mixed on delivery outside a few high-salience welfare schemes, so the 2026 AIADMK manifesto should be read with greater skepticism on broad implementation capacity than on narrow subsidy promises.'
+    ],
+    conservativeNote: 'This conservative note is intentional: without a separate manifesto-text extraction pass, extra AIADMK term schemes should be discussed as governance legacy, not counted as manifesto fulfilment.'
+  }
+};
+
+const MANIFESTO_TERM_ANALYSIS_TA = {
+  '2021': {
+    popularDone: [
+      'விடியல் பயணம் இலவச பேருந்து திட்டம்: 2021 முதல் மாநிலம் முழுவதும் செயல்பாட்டில் உள்ளது; ArasuBus தரவுகளில் நாளொன்றுக்கு சுமார் 41 லட்சம் பெண்கள் பயணம் செய்ததாக குறிப்பிடப்படுகிறது.',
+      'கலைஞர் மகளிர் உரிமைத் தொகை: உயர்ந்த பொதுக் காட்சியுள்ள மாதாந்திர உதவி திட்டம்; அதிகாரப்பூர்வ தளங்கள் மற்றும் சுமார் 1.31 கோடி பயனாளர்கள் குறித்த rollout குறிப்புகள் உள்ளன.',
+      'ஆவின் பால் விலை குறைப்பு: லிட்டருக்கு ரூ.3 என வாக்குறுதி அளித்த அளவிலேயே நிறைவேற்றப்பட்ட கணிசமான விலை நிவாரண உருப்படி.'
+    ],
+    nonManifesto: [
+      'நான் முதல்வன் திட்டம் term-level வெற்றி திட்டமாக அடிக்கடி குறிப்பிடப்பட்டாலும், தற்போதைய research summary இது 2021 அறிக்கை நேரடி mapping-க்கு வெளியே எனக் காட்டுகிறது; அதனால் manifesto fulfilment கணக்கில் சேர்க்கப்படவில்லை.',
+      'முதல்வர் காலை உணவுத் திட்டம் 2026 பிரச்சார விவாதங்களில் அதிகம் குறிப்பிடப்பட்டாலும், மூல அறிக்கை mapping உறுதி இல்லாமல் manifesto score-இல் சேர்க்கப்படவில்லை.'
+    ],
+    compareTakeaways: [
+      '2026 DMK, 2021 காலத்தின் welfare backbone-ஐ தொடர்ந்தே விரிவாக்குகிறது; பெண்கள் மாதாந்திர உதவி ரூ.1,000 இலிருந்து ரூ.2,000 ஆக உயர்த்துவது புதிய மாதிரி அல்ல, scale-up என முன்வைக்கப்படுகிறது.',
+      '2026 DMK அறிக்கை, 2021 audited நிறைவேற்ற பதிவை ஒப்பிடும் போது மாணவர்/இளைஞர் பண உதவி, காலை உணவு விரிவாக்கம், முதலீடு வழி வேலை உருவாக்கம் மீது அதிக கவனம் செலுத்துகிறது.',
+      'படிப்போர் கவனம்: 2021-இல் நிறைவேறாமல் இருந்த LPG மானியம், கல்விக் கடன் தள்ளுபடி, தனியார் துறை ஒதுக்கீடு போன்றவை 2026 வாக்குறுதிகளை மதிப்பிட delivery-risk signal ஆக பார்க்கப்பட வேண்டும்.'
+    ],
+    conservativeNote: 'Research summary-ல் தெளிவாக அடையாளம் காணப்பட்ட இரண்டு non-manifesto term திட்டங்கள் மட்டுமே இங்கு பட்டியலிடப்பட்டுள்ளன. manifesto உரை நேரடி பொருத்தம் இல்லாமல் கூடுதல் திட்டங்கள் score-இல் சேர்க்கப்படவில்லை.'
+  },
+  '2016': {
+    popularDone: [
+      'முதல் 100 யூனிட் இலவச மின்சாரம்: உயர் காட்சியுள்ள நலத்திட்ட வாக்குறுதி; அதிகாரப்பூர்வ கொள்கை மற்றும் பின்னர் TNERC/Gazette தொடர்ச்சி ஆதாரங்களுடன் உள்ளது.',
+      'அம்மா இருசக்கர மானியம்: பெண்கள் ஆதரவு திட்டமாக அதிக அறிமுகம் பெற்றது; கசேட் அளவிலான செயலாக்க ஆதாரம் உள்ளது.',
+      'மகப்பேறு உதவி ரூ.18,000 உயர்வு: தெளிவாக அமல்படுத்தப்பட்டு பின்னர் சுகாதாரத் துறை ஆணைகளிலும் தொடரப்பட்டுள்ளது.',
+      'கூட்டுறவு பயிர் கடன் தள்ளுபடி: அரசியல் ரீதியாக உயர் தாக்கம் கொண்ட விவசாய நடவடிக்கை; குறிப்பிட்ட அரசாணை ஆதாரங்களுடன் உள்ளது.'
+    ],
+    nonManifesto: [
+      'தற்போதைய research pack, AIADMK 2016-2021 காலத்தில் manifesto-க்கு வெளியான திட்டங்களை உயர் நம்பிக்கை பட்டியலாக தனியாக வழங்கவில்லை. அதனால் 2016 manifesto உரை extraction இல்லாமல் கூடுதல் திட்டங்கள் இங்கு score செய்யப்படவில்லை.'
+    ],
+    compareTakeaways: [
+      '2026 AIADMK, பழைய அம்மா-பிராண்டு welfare grammar-க்கு திரும்புகிறது: குடும்ப பண உதவி, LPG ஆதரவு, மானிய நுகர்வு நலன்கள் மையமாகவே உள்ளன.',
+      '2016 பதிவை ஒப்பிடும்போது, 2026 AIADMK அறிக்கை one-time நலன்கள் மற்றும் உள்கட்டமைப்பு வாக்குறுதிகளில் இருந்து recurring household transfers மற்றும் price-relief messaging-க்கு அதிகமாக மாறுகிறது.',
+      'படிப்போர் கவனம்: 2016 காலத்தில் சில உயர்த் தாக்க நலத்திட்டங்களைத் தவிர delivery கலப்பு நிலை இருந்ததால், 2026 AIADMK அறிக்கையை அகலமான செயலாக்கக் கூற்றுகளில் அதிக எச்சரிக்கையுடன் வாசிக்க வேண்டும்.'
+    ],
+    conservativeNote: 'இந்த conservative note நோக்கமுடையது: தனி manifesto-text extraction இல்லாமல், AIADMK கூடுதல் term திட்டங்கள் manifesto fulfilment ஆக அல்ல, governance legacy ஆகவே பேசப்பட வேண்டும்.'
+  }
+};
+
+function getConfidenceLabel(confidence, ta) {
+  if (!ta) return confidence || '';
+  const val = (confidence || '').toLowerCase();
+  if (val === 'high') return 'உயர்';
+  if (val === 'medium') return 'நடுத்தரம்';
+  if (val === 'low') return 'குறைவு';
+  return confidence || '';
+}
+
+const AUDIT_CATEGORY_TAMIL = {
+  'Women': 'பெண்கள்',
+  'Prices': 'விலை குறைப்பு',
+  'Welfare': 'நலத்திட்டம்',
+  'Religion': 'சமய விவகாரம்',
+  'Governance': 'ஆட்சி',
+  'Protest Rights': 'போராட்ட உரிமைகள்',
+  'Urban Dev': 'நகர்ப்புற மேம்பாடு',
+  'Education': 'கல்வி',
+  'Employment': 'வேலைவாய்ப்பு',
+  'Taxation': 'வரி',
+  'Pensions': 'ஓய்வூதியம்',
+  'Sports': 'விளையாட்டு',
+  'Agriculture': 'விவசாயம்',
+  'Power': 'மின்சாரம்',
+  'Fisherfolk': 'மீனவர்கள்',
+  'Water': 'நீர் வளம்',
+  'Transport': 'போக்குவரத்து',
+  'Connectivity': 'இணைப்பு சேவைகள்',
+  'Liquor': 'மதுபான கொள்கை',
+  'Infrastructure': 'உள்கட்டமைப்பு'
+};
+
+const AUDIT_PROMISE_TAMIL = {
+  'Free bus travel for women in state-run urban and suburban buses': 'அரசு நகர மற்றும் புறநகர் பேருந்துகளில் பெண்களுக்கு இலவச பயணம்',
+  'Reduce Aavin milk prices by Rs 3 per litre': 'ஆவின் பால் விலையை லிட்டருக்கு ரூ.3 குறைத்தல்',
+  'Rs 1,000 monthly assistance for eligible women heads of households (KMUT)': 'தகுதியான பெண் குடும்பத் தலைவர்களுக்கு மாதம் ரூ.1,000 உதவி (KMUT)',
+  'Rs 4,000 Covid cash relief for ration card holders': 'ரேஷன் அட்டைதாரர்களுக்கு ரூ.4,000 கொரோனா நிவாரணம்',
+  'Increase reservation for women in government jobs from 30% to 40%': 'அரசு வேலைகளில் பெண்கள் ஒதுக்கீட்டை 30% இலிருந்து 40% ஆக உயர்த்தல்',
+  'Extend maternity leave for women employees from 9 months to 12 months': 'பெண் பணியாளர்களுக்கு மகப்பேறு விடுப்பை 9 மாதத்திலிருந்து 12 மாதமாக உயர்த்தல்',
+  'Set up working women hostels in all districts': 'அனைத்து மாவட்டங்களிலும் பணிபுரியும் பெண்களுக்கு விடுதிகள் அமைத்தல்',
+  'Allocate Rs 1,000 crore for temple renovation': 'கோவில் புதுப்பிப்புக்கு ரூ.1,000 கோடி ஒதுக்குதல்',
+  'Reduce petrol by Rs 5 and diesel by Rs 4': 'பெட்ரோல் ரூ.5, டீசல் ரூ.4 குறைத்தல்',
+  'Live-stream Assembly proceedings for transparency': 'சட்டமன்ற நடவடிக்கைகளை நேரலை செய்யுதல்',
+  'Withdraw cases against Sterlite, hydrocarbon, methane, Kudankulam protesters': 'ஸ்டெர்லைட்/ஹைட்ரோகார்பன்/மீத்தேன்/கூடங்குளம் போராட்ட வழக்குகளை வாபஸ் பெறுதல்',
+  'Establish Semmozhi Poongas in all municipal corporations': 'அனைத்து மாநகராட்சிகளிலும் செம்மொழி பூங்காக்கள் அமைத்தல்',
+  'Reduce LPG cylinder price / give LPG subsidy (Rs 100 per cylinder)': 'எல்பிஜி சிலிண்டர் விலை குறைப்பு / ரூ.100 மானியம் வழங்குதல்',
+  'Student education loan waiver for eligible youth': 'தகுதி உள்ள இளைஞர்களுக்கான கல்விக் கடன் தள்ளுபடி',
+  '75% reservation for Tamil Nadu residents in private sector employment': 'தனியார் துறையில் தமிழ்நாடு மக்களுக்கு 75% ஒதுக்கீடு',
+  'Increase financial assistance under marriage assistance schemes': 'திருமண உதவி திட்டங்களில் நிதியுதவி உயர்த்தல்',
+  'Government jobs for unmarried women above age 35 based on qualification': '35 வயதுக்கு மேற்பட்ட திருமணமாகாத பெண்களுக்கு தகுதி அடிப்படையில் அரசு வேலை',
+  'Do not increase property tax until Covid effects subside': 'கோவிட் பாதிப்பு குறையும் வரை சொத்து வரி உயர்வை தவிர்த்தல்',
+  'Reserve 100% of government and public sector jobs for Tamil Nadu youth': 'அரசு/அரசுத்துறை வேலைகளில் தமிழ்நாடு இளைஞர்களுக்கு 100% ஒதுக்கீடு',
+  'Regularise part-time art, music and physical education teachers': 'பகுதி நேர கலை/இசை/உடற்கல்வி ஆசிரியர்களை நிரந்தரம் செய்தல்',
+  'Implement old pension scheme for transport workers': 'போக்குவரத்து ஊழியர்களுக்கு பழைய ஓய்வூதிய திட்டம் அமல்படுத்தல்',
+  'Revive the Tamil Nadu Legislative Council': 'தமிழ்நாடு சட்டமன்ற மேலவையை மீண்டும் உருவாக்கல்',
+  'Provide monthly assistance to Jallikattu participants': 'ஜல்லிக்கட்டு பங்கேற்பாளர்களுக்கு மாதாந்திர உதவி வழங்கல்',
+  'Waive outstanding cooperative crop loans as on 31.03.2016': '31.03.2016 நிலவரப்படி கூட்டுறவு பயிர் கடன்களை தள்ளுபடி செய்தல்',
+  'Provide 100 free units of electricity every two months to all domestic consumers': 'அனைத்து வீட்டு நுகர்வோருக்கும் இரு மாதத்திற்கு 100 யூனிட் இலவச மின்சாரம்',
+  '50% subsidy up to Rs 20,000 for working women to buy scooters': 'பணிபுரியும் பெண்களுக்கு ஸ்கூட்டர் வாங்க ரூ.20,000 வரை 50% மானியம்',
+  'Increase maternity assistance from Rs 12,000 to Rs 18,000': 'மகப்பேறு உதவித்தொகையை ரூ.12,000 இலிருந்து ரூ.18,000 ஆக உயர்த்தல்',
+  'Construct 5,000 houses for fishermen': 'மீனவர்களுக்கு 5,000 வீடுகள் கட்டுதல்',
+  'Free laptops for students': 'மாணவர்களுக்கு இலவச மடிக்கணினி வழங்கல்',
+  'Cauvery Water Management Board / Authority implementation': 'காவிரி நீர் மேலாண்மை வாரியம் / ஆணையம் அமைத்தல்',
+  'Prevent Karnataka from constructing Mekedatu dam': 'கர்நாடகாவின் மேகேதாது அணை கட்டுமானத்தை தடுக்குதல்',
+  'Metro extension to Airport and Washermanpet to Wimco Nagar (Chennai)': 'விமானநிலையம் மற்றும் வாஷர்மன்பேட்டை-விம்கோ நகர் வரை மெட்ரோ நீட்டிப்பு',
+  'Free Wi-Fi in public places': 'பொது இடங்களில் இலவச வைஃபை',
+  'Phased prohibition and closure of TASMAC shops': 'படிப்படியாக மதுவிலக்கு மற்றும் டாஸ்மாக் கடைகள் மூடல்',
+  'Protected agricultural zone / no methane or shale gas projects in delta': 'டெல்டா பாதுகாக்கப்பட்ட வேளாண் மண்டலம் / மீத்தேன்-ஷேல் திட்டங்கள் இல்லை',
+  'Monorail in Chennai, Madurai, Trichy and Coimbatore': 'சென்னை, மதுரை, திருச்சி, கோயம்புத்தூரில் மோனோரெயில்',
+  'Free cell phones for ration card holders': 'ரேஷன் அட்டைதாரர்களுக்கு இலவச செல்போன்',
+  'Amma banking card for the poor to avail state services': 'ஏழைகளுக்கு அரசு சேவைக்கான அம்மா வங்கி அட்டை',
+  'Increase Mullaiperiyar dam level to 152 feet': 'முல்லைப்பெரியாறு அணை நீர்மட்டத்தை 152 அடியாக உயர்த்தல்',
+  'Implement Pamba-Achankovil-Vaipaaru river linking project': 'பம்பா-அச்சன்கோவில்-வைப்பாறு ஆறு இணைப்பு திட்டம்',
+  'Elevated highway from Meenambakkam to Chengalpattu': 'மீனம்பாக்கம் முதல் செங்கல்பட்டு வரை உயர்மட்ட சாலை',
+  'Athikadavu-Avinashi irrigation project': 'அத்திக்கடவு-அவினாசி பாசன திட்டம்',
+  'Link Cauvery-Vaigai-Mahanadhi-Godavari-Krishna-Gundaru rivers': 'காவிரி-வைகை-மஹாநதி-கோதாவரி-கிருஷ்ணா-குண்டாறு ஆறு இணைப்பு',
+  'Stormwater drains in Greater Chennai Corporation limits': 'பெருநகர சென்னை எல்லைக்குள் மழைநீர் வடிகால் அமைத்தல்',
+  'Convert Cuddalore harbour into a deep-sea harbour': 'கடலூர் துறைமுகத்தை ஆழ்கடல் துறைமுகமாக மாற்றுதல்'
+};
+
+function getAuditCategoryLabel(category, ta) {
+  if (!ta) return category || '';
+  return AUDIT_CATEGORY_TAMIL[category] || category || '';
+}
+
+function getAuditPromiseLabel(promise, ta) {
+  if (!ta) return promise || '';
+  return AUDIT_PROMISE_TAMIL[promise] || promise || '';
+}
+
+function getManifestoStatusInfo(status) {
+  const normalized = (status || '').toLowerCase();
+  if (normalized.includes('not')) {
+    return { cls: 'mf-status-not', labelEn: 'Not Fulfilled', labelTa: 'நிறைவேறவில்லை' };
+  }
+  if (normalized.includes('fulfilled') && !normalized.includes('part')) {
+    return { cls: 'mf-status-fulfilled', labelEn: 'Fulfilled', labelTa: 'நிறைவேற்றப்பட்டது' };
+  }
+  if (normalized.includes('part')) {
+    return { cls: 'mf-status-partial', labelEn: 'Partially Fulfilled', labelTa: 'பகுதியாக நிறைவேற்றப்பட்டது' };
+  }
+  return { cls: 'mf-status-progress', labelEn: status, labelTa: status };
+}
+
+function getManifestoStatusBucket(status) {
+  const normalized = (status || '').toLowerCase();
+  if (normalized.includes('not')) return 'not';
+  if (normalized.includes('fulfilled') && !normalized.includes('part')) return 'fulfilled';
+  if (normalized.includes('part')) return 'partial';
+  return 'progress';
+}
+
+function renderManifestoAuditChart(rows) {
+  const canvas = document.getElementById('manifestoAuditChart');
+  if (!canvas || typeof Chart === 'undefined') return;
+  const ta = currentLang === 'ta';
+  const textColor = getChartTextColor();
+  const gridColor = getChartGridColor();
+
+  const counts = { fulfilled: 0, partial: 0, not: 0, progress: 0 };
+  rows.forEach((row) => {
+    const b = getManifestoStatusBucket(row.status);
+    counts[b] = (counts[b] || 0) + 1;
+  });
+
+  const labels = ta
+    ? ['நிறைவேற்றப்பட்டது', 'பகுதியாக', 'நிறைவேறவில்லை', 'முன்னேற்றம்/அனுமதி']
+    : ['Fulfilled', 'Partial', 'Not Fulfilled', 'Progress'];
+  const data = [counts.fulfilled, counts.partial, counts.not, counts.progress];
+  const colors = ['#3e7b61', '#b28a3d', '#8b1a2b', '#5d7086'];
+
+  if (chartInstances.manifestoAudit) chartInstances.manifestoAudit.destroy();
+  chartInstances.manifestoAudit = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: colors,
+        borderRadius: 8,
+        maxBarThickness: 28,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const total = data.reduce((s, n) => s + n, 0) || 1;
+              const pct = ((ctx.raw / total) * 100).toFixed(1);
+              return `${ctx.raw} (${pct}%)`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          grid: { color: gridColor },
+          ticks: { color: textColor, precision: 0 }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { color: textColor, font: { weight: 600 } }
+        }
+      }
+    }
+  });
+}
+
+function renderManifestoMethodology(year) {
+  const methodEl = document.getElementById('manifestoAuditMethod');
+  if (!methodEl) return;
+  const ta = currentLang === 'ta';
+  const base = MANIFESTO_AUDIT_METHOD[year] || MANIFESTO_AUDIT_METHOD['2021'];
+  const dataTa = MANIFESTO_AUDIT_METHOD_TA[year] || MANIFESTO_AUDIT_METHOD_TA['2021'];
+  const data = ta && dataTa ? dataTa : base;
+
+  const title = ta ? TAMIL.mf_audit_method_title : 'Evidence Method & Source Selection';
+  const sourceNamesTitle = ta ? TAMIL.mf_audit_source_names : 'Data Sources Used for Verification';
+  const primary = ta ? TAMIL.mf_audit_primary_source : 'Primary Evaluation Source';
+  const why = ta ? TAMIL.mf_audit_why_primary : 'Why This Was Used as the Primary Evaluator';
+  const rule = ta ? TAMIL.mf_audit_verification_rule : 'Verification Rule';
+
+  methodEl.innerHTML = `
+    <div class="mf-method-header">${title}</div>
+    <div class="mf-method-grid">
+      <div class="mf-method-block">
+        <div class="mf-method-label">${primary}</div>
+        <div class="mf-method-value">${data.primarySource}</div>
+      </div>
+      <div class="mf-method-block">
+        <div class="mf-method-label">${why}</div>
+        <div class="mf-method-value">${data.whyPrimary}</div>
+      </div>
+    </div>
+    <div class="mf-method-rules">
+      ${data.verificationRules.map((item) => `
+        <div class="mf-method-rule">
+          <div class="mf-method-rule-label">${rule}</div>
+          <div class="mf-method-rule-text">${item}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="mf-method-sources">
+      <div class="mf-method-rule-label">${sourceNamesTitle}</div>
+      <div class="mf-method-source-list">
+        ${(data.sourceNames || []).map((s) => `<span class="mf-source-tag">${s}</span>`).join(' ')}
+      </div>
+    </div>
+  `;
+}
+
+function renderManifestoValidation(year) {
+  const el = document.getElementById('manifestoAuditValidation');
+  if (!el) return;
+  const ta = currentLang === 'ta';
+  const curr = MANIFESTO_AUDIT_DATA[year] || MANIFESTO_AUDIT_DATA['2021'];
+  const otherYear = year === '2021' ? '2016' : '2021';
+  const other = MANIFESTO_AUDIT_DATA[otherYear];
+
+  const countBy = (rows) => {
+    const out = { fulfilled: 0, partial: 0, not: 0, progress: 0 };
+    rows.forEach((r) => {
+      const b = getManifestoStatusBucket(r.status);
+      out[b] = (out[b] || 0) + 1;
+    });
+    return out;
+  };
+
+  const a = countBy(curr.rows);
+  const b = countBy(other.rows);
+  const title = ta ? TAMIL.mf_audit_validation_title : 'Data Validation Notes';
+  const whyNot = ta ? TAMIL.mf_audit_why_not_fulfilled : 'Why 2021 shows higher Not Fulfilled despite more completed';
+  const note = ta
+    ? (year === '2021'
+      ? `2021 ஆய்வு வரிகள்: ${curr.rows.length}; நிறைவேற்றம்: ${a.fulfilled}, நிறைவேறாதவை: ${a.not}. 2016 ஆய்வு வரிகள்: ${other.rows.length}; நிறைவேற்றம்: ${b.fulfilled}, நிறைவேறாதவை: ${b.not}.`
+      : `2016 ஆய்வு வரிகள்: ${curr.rows.length}; நிறைவேற்றம்: ${a.fulfilled}, நிறைவேறாதவை: ${a.not}. 2021 ஆய்வு வரிகள்: ${other.rows.length}; நிறைவேற்றம்: ${b.fulfilled}, நிறைவேறாதவை: ${b.not}.`)
+    : (year === '2021'
+      ? `2021 audited rows: ${curr.rows.length}; fulfilled: ${a.fulfilled}, not fulfilled: ${a.not}. 2016 audited rows: ${other.rows.length}; fulfilled: ${b.fulfilled}, not fulfilled: ${b.not}.`
+      : `2016 audited rows: ${curr.rows.length}; fulfilled: ${a.fulfilled}, not fulfilled: ${a.not}. 2021 audited rows: ${other.rows.length}; fulfilled: ${b.fulfilled}, not fulfilled: ${b.not}.`);
+  const reason = ta
+    ? (year === '2021'
+      ? '2021 sample-ல் வழக்குப் பின்னணி உள்ளதும், உயர்ந்த எதிர்பார்ப்பு கொண்ட welfare/structural வாக்குறுதிகளும் அதிகம் உள்ளதால், நிறைவேற்றமும் நிறைவேறாததும் இரண்டும் உயர்ந்து காணப்படுகின்றன. இது sample composition மற்றும் strict labeling விளைவு; முரண்பாடு அல்ல.'
+      : '2016 sample-ல் உள்கட்டமைப்பு மற்றும் நீர் சார்ந்த பல உருப்படிகள் partial/project-progress என வகைப்படுத்தப்பட்டுள்ளதால், 2021-ஐ ஒப்பிடும்போது not fulfilled எண்ணிக்கை குறைவாகத் தோன்றுகிறது; ஆனால் மொத்தப் பதிவு கலப்பானதே.')
+    : (year === '2021'
+      ? '2021 includes more litigated and high-expectation welfare/structural promises in the audited sample, so both fulfilled and not-fulfilled counts are higher at the same time. This is a sample-composition and strict-labeling effect, not a contradiction.'
+      : '2016 has a larger share of items labeled partial/project-progress in infrastructure and water, which suppresses not-fulfilled counts relative to 2021 while still showing a mixed overall record.');
+
+  el.innerHTML = `
+    <div class="mf-validation-title">${title}</div>
+    <div class="mf-validation-line">${note}</div>
+    <div class="mf-validation-line"><strong>${whyNot}:</strong> ${reason}</div>
+  `;
+}
+
+function renderManifestoTermAnalysis(year) {
+  const insightsEl = document.getElementById('manifestoAuditInsights');
+  if (!insightsEl) return;
+  const ta = currentLang === 'ta';
+  const base = MANIFESTO_TERM_ANALYSIS[year] || MANIFESTO_TERM_ANALYSIS['2021'];
+  const dataTa = MANIFESTO_TERM_ANALYSIS_TA[year] || MANIFESTO_TERM_ANALYSIS_TA['2021'];
+  const data = ta && dataTa ? dataTa : base;
+
+  const title = ta ? TAMIL.mf_audit_term_analysis : 'Term Analysis';
+  const popular = ta ? TAMIL.mf_audit_popular_done : 'Most Visible Implemented Schemes';
+  const outside = ta ? TAMIL.mf_audit_non_manifesto : 'Introduced in Office but Not Counted as Manifesto Fulfilment';
+  const compare = ta ? TAMIL.mf_audit_compare_takeaways : 'Comparison with the Same Party\'s 2026 Manifesto';
+  const conservative = ta ? TAMIL.mf_audit_conservative_note : 'Conservative Note';
+
+  insightsEl.innerHTML = `
+    <div class="mf-analysis-title">${title}</div>
+    <div class="mf-analysis-grid">
+      <div class="mf-analysis-block">
+        <div class="mf-analysis-block-title">${popular}</div>
+        ${data.popularDone.map((item) => `<div class="mf-analysis-item">${item}</div>`).join('')}
+      </div>
+      <div class="mf-analysis-block">
+        <div class="mf-analysis-block-title">${outside}</div>
+        ${data.nonManifesto.map((item) => `<div class="mf-analysis-item">${item}</div>`).join('')}
+      </div>
+      <div class="mf-analysis-block">
+        <div class="mf-analysis-block-title">${compare}</div>
+        ${data.compareTakeaways.map((item) => `<div class="mf-analysis-item">${item}</div>`).join('')}
+        <div class="mf-analysis-note"><strong>${conservative}:</strong> ${data.conservativeNote}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderManifestoAudit(year) {
+  const data = MANIFESTO_AUDIT_DATA[year] || MANIFESTO_AUDIT_DATA['2021'];
+  const ta = currentLang === 'ta';
+  const yearSelect = document.getElementById('manifestoAuditYear');
+  const summaryEl = document.getElementById('manifestoAuditSummary');
+  const bodyEl = document.getElementById('manifestoAuditBody');
+  if (!summaryEl || !bodyEl) return;
+  if (yearSelect && yearSelect.value !== year) yearSelect.value = year;
+
+  const labels = ta
+    ? {
+        party: 'ஆட்சி/கட்சி',
+        range: 'நம்பத்தகுந்த நிறைவேற்ற வரம்பு',
+        notes: 'முறை குறிப்பு',
+        total: 'மொத்த உறுதிமொழிகள்'
+      }
+    : {
+        party: 'Party / Government',
+        range: 'Defensible Completion Range',
+        notes: 'Method Note',
+        total: 'Total Promises'
+      };
+
+  const totalText = data.totalPromises
+    ? `${data.totalPromises}`
+    : (ta ? 'முழு அடிப்படை எண்ணிக்கை உறுதிப்படுத்தப்படவில்லை' : 'No full denominator confirmed');
+
+  summaryEl.innerHTML = `
+    <div class="mf-audit-card">
+      <div class="mf-audit-card-label">${labels.party}</div>
+      <div class="mf-audit-card-value">${data.party} (${year})</div>
+      <div class="mf-audit-card-sub">${labels.total}: ${totalText}</div>
+    </div>
+    <div class="mf-audit-card">
+      <div class="mf-audit-card-label">${labels.range}</div>
+      <div class="mf-audit-card-value">${data.strictRange}</div>
+      <div class="mf-audit-card-sub">${data.strictPercent}</div>
+    </div>
+    <div class="mf-audit-card">
+      <div class="mf-audit-card-label">${labels.notes}</div>
+      <div class="mf-audit-card-sub">${data.estimateNote}</div>
+    </div>
+  `;
+
+  bodyEl.innerHTML = data.rows.map((row) => {
+    const s = getManifestoStatusInfo(row.status);
+    const statusLabel = ta ? s.labelTa : s.labelEn;
+    const sourceTags = getEvidenceSourceTags(row.evidence);
+    const categoryLabel = getAuditCategoryLabel(row.category, ta);
+    const promiseLabel = getAuditPromiseLabel(row.promise, ta);
+    return `
+      <tr>
+        <td data-label="${ta ? 'வகை' : 'Category'}"><span class="mf-category-tag">${categoryLabel}</span></td>
+        <td data-label="${ta ? 'உறுதி / வாக்குறுதி' : 'Promise / Commitment'}">${promiseLabel}</td>
+        <td data-label="${ta ? 'நிலை' : 'Status'}"><span class="mf-status-badge ${s.cls}">${statusLabel}</span></td>
+        <td data-label="${ta ? 'நம்பிக்கை' : 'Confidence'}">${getConfidenceLabel(row.confidence, ta)}</td>
+        <td data-label="${ta ? 'மூலங்கள்' : 'Sources'}">${sourceTags.map((tag) => `<span class="mf-source-tag">${tag}</span>`).join(' ')}</td>
+        <td data-label="${ta ? 'ஆதார குறிப்பு' : 'Evidence Notes'}">${row.evidence}</td>
+      </tr>
+    `;
+  }).join('');
+
+  renderManifestoValidation(year);
+  renderManifestoTermAnalysis(year);
+  renderManifestoMethodology(year);
 }
 
 /* === D3 Map === */
 let geoData = null;
 let mapSvg, mapG, projection, pathGen;
 let currentHighlight = null;
+let candidateDataLoadPromise = null;
+
+function ensureCandidateDataLoaded() {
+  if (typeof CandidateData === 'undefined') return Promise.resolve(false);
+  if (CandidateData.isAvailable()) return Promise.resolve(true);
+  if (candidateDataLoadPromise) return candidateDataLoadPromise;
+
+  candidateDataLoadPromise = CandidateData.load()
+    .then((available) => {
+      if (available) {
+        if (tableBuilt && !candidatesTableBuilt) buildCandidatesTable();
+        if (chartsBuilt && !candChartsBuilt) buildCandidateCharts();
+      }
+      return available;
+    })
+    .catch((error) => {
+      console.error('Candidate data lazy-load failed:', error);
+      return false;
+    });
+
+  return candidateDataLoadPromise;
+}
+
+function getConstData(acNo) {
+  return CONSTITUENCIES.find((c) => c.ac === Number(acNo)) || null;
+}
+
+function getMapFill(c, mode) {
+  if (!c) return '#9aa5b1';
+  if (mode === '2021') return getPartyColor(c.w21 || 'Others');
+  if (mode === '2016') return getPartyColor(c.w16 || 'Others');
+  return '#19769f';
+}
+
+function renderMapLegend() {
+  const el = document.getElementById('mapLegend');
+  if (!el) return;
+  const mode = document.getElementById('mapColorMode')?.value || 'constituency';
+
+  if (mode !== '2021' && mode !== '2016') {
+    el.innerHTML = `
+      <div class="legend-item"><span class="legend-swatch" style="background:#19769f"></span>${currentLang === 'ta' ? TAMIL.constituency_map : 'Constituency Map'}</div>
+    `;
+    return;
+  }
+
+  const parties = mode === '2021'
+    ? [...new Set(CONSTITUENCIES.map((c) => c.w21).filter(Boolean))]
+    : [...new Set(CONSTITUENCIES.map((c) => c.w16).filter(Boolean))];
+
+  el.innerHTML = parties.map((p) => `
+    <div class="legend-item"><span class="legend-swatch" style="background:${getPartyColor(p)}"></span>${partyLabel(p)}</div>
+  `).join('');
+}
+
+function updateMapColoring() {
+  if (!mapG) return;
+  const mode = document.getElementById('mapColorMode')?.value || 'constituency';
+  mapG.selectAll('path').attr('fill', (d) => {
+    const c = getConstData(d.properties.ac_no);
+    return getMapFill(c, mode);
+  });
+  renderMapLegend();
+}
 
 async function initMap() {
   const resp = await fetch('tn_constituencies.geojson');
+  if (!resp.ok) {
+    throw new Error(`GeoJSON request failed with status ${resp.status}`);
+  }
   geoData = await resp.json();
 
   const container = document.getElementById('mapSvg');
-  const w = container.clientWidth;
-  const h = container.clientHeight || w * 1.33;
+  if (!container) return;
+  const w = container.clientWidth || 900;
+  const h = container.clientHeight || Math.round(w * 1.33);
 
   mapSvg = d3.select('#mapSvg').append('svg')
     .attr('viewBox', `0 0 ${w} ${h}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
   mapG = mapSvg.append('g');
-
-  projection = d3.geoMercator().fitSize([w * 0.88, h * 0.92], geoData);
-  // Center the map in the container
-  const [[x0, y0], [x1, y1]] = d3.geoPath().projection(projection).bounds(geoData);
-  const mapW = x1 - x0;
-  const offsetX = (w - mapW) / 2 - x0;
-  projection.translate([projection.translate()[0] + offsetX, projection.translate()[1]]);
+  projection = d3.geoMercator().fitSize([w * 0.9, h * 0.92], geoData);
   pathGen = d3.geoPath().projection(projection);
 
-  // Draw constituencies
+  const zoom = d3.zoom().scaleExtent([1, 12]).on('zoom', (e) => mapG.attr('transform', e.transform));
+  mapSvg.call(zoom);
+
   mapG.selectAll('path')
     .data(geoData.features)
-    .join('path')
+    .enter()
+    .append('path')
     .attr('d', pathGen)
-    .attr('class', 'constituency')
+    .attr('fill', (d) => getMapFill(getConstData(d.properties.ac_no), 'constituency'))
     .attr('stroke', 'var(--bg)')
     .attr('stroke-width', 0.5)
-    .attr('cursor', 'pointer')
+    .attr('fill-opacity', 0.85)
     .on('mouseover', handleMouseOver)
     .on('mousemove', handleMouseMove)
     .on('mouseout', handleMouseOut)
     .on('click', handleClick);
 
-  // Zoom
-  const zoom = d3.zoom()
-    .scaleExtent([1, 12])
-    .on('zoom', (e) => mapG.attr('transform', e.transform));
-  mapSvg.call(zoom);
-
-  updateMapColoring();
-}
-
-function getConstData(acNo) {
-  return CONSTITUENCIES.find(c => c.ac === acNo);
-}
-
-function updateMapColoring() {
-  const mode = document.getElementById('mapColorMode').value;
-  const legend = document.getElementById('mapLegend');
-  const partiesUsed = new Set();
-  const ta = currentLang === 'ta';
-
-  mapG.selectAll('path').each(function(d) {
-    const acNo = d.properties.ac_no;
-    const c = getConstData(acNo);
-    let color = '#ddd';
-    let party = '';
-
-    if (mode === '2021' && c) {
-      party = c.w21;
-      color = getPartyColor(party);
-    } else if (mode === '2016' && c) {
-      party = c.w16;
-      color = party ? getPartyColor(party) : '#555';
-    } else if (mode === 'generic') {
-      color = '#7fb3d3';
-    }
-    if (party) partiesUsed.add(party);
-    d3.select(this).attr('fill', color).attr('fill-opacity', 0.85);
-  });
-
-  // Update legend
-  if (mode === 'generic') {
-    legend.innerHTML = `<span class="legend-item"><span class="legend-swatch" style="background:#7fb3d3"></span>${ta ? TAMIL.constituency : 'Constituency'}</span>`;
-  } else {
-    legend.innerHTML = Array.from(partiesUsed).sort().map(p =>
-      `<span class="legend-item"><span class="legend-swatch" style="background:${getPartyColor(p)}"></span>${partyLabel(p)}</span>`
-    ).join('');
-  }
+  renderMapLegend();
 }
 
 function handleMouseOver(e, d) {
@@ -867,7 +1557,7 @@ function handleMouseOver(e, d) {
   }
 
   document.getElementById('tooltip').innerHTML =
-    `<strong>${ta ? 'தொ.' : 'AC'} ${c.ac}: ${constName(c)}</strong><br>${partyInfo}<br>${extraLine}`;
+    `<strong>${ta ? 'தொ.' : 'AC'} ${c.ac}: ${escapeHtml(constName(c))}</strong><br>${partyInfo}<br>${escapeHtml(extraLine)}`;
   document.getElementById('tooltip').style.display = 'block';
   d3.select(this).attr('stroke', '#fff').attr('stroke-width', 2).attr('fill-opacity', 1);
 }
@@ -921,7 +1611,7 @@ function highlightConstituency(acNo) {
 function searchConstituency(query) {
   const box = document.getElementById('searchResults');
   if (!query || query.length < 2) { box.classList.remove('active'); return; }
-  const q = query.toLowerCase();
+  const q = normalizeSearchQuery(query);
   const ta = currentLang === 'ta';
   const matches = CONSTITUENCIES.filter(c =>
     c.n.toLowerCase().includes(q) || c.d.toLowerCase().includes(q) || String(c.ac).includes(q) ||
@@ -932,8 +1622,8 @@ function searchConstituency(query) {
   box.innerHTML = matches.map(c => {
     const dist = ta && DISTRICT_TAMIL[c.d] ? DISTRICT_TAMIL[c.d] : c.d;
     return `<div class="search-result-item" onclick="selectSearchResult(${c.ac})">
-      <div class="sr-name">${ta ? 'தொ.' : 'AC'} ${c.ac}: ${constName(c)}</div>
-      <div class="sr-meta">${dist} · ${formatNum(c.t)} ${ta ? TAMIL.voters : 'voters'}</div>
+      <div class="sr-name">${ta ? 'தொ.' : 'AC'} ${c.ac}: ${escapeHtml(constName(c))}</div>
+      <div class="sr-meta">${escapeHtml(dist)} · ${formatNum(c.t)} ${ta ? TAMIL.voters : 'voters'}</div>
     </div>`;
   }).join('');
   box.classList.add('active');
@@ -1177,27 +1867,24 @@ function _sortCandidates(candidates, constData) {
 const _candLookup = {};
 
 function _photoImg(url, size, cls) {
-  if (url) return `<img src="${url}" class="${cls}" width="${size}" height="${size}" loading="lazy" onerror="this.outerHTML='<span class=\\'${cls}-placeholder\\' style=\\'width:${size}px;height:${size}px\\'>👤</span>'">`;
+  const safeUrl = safeImageUrl(url);
+  if (safeUrl) {
+    return `<img src="${safeUrl}" class="${cls}" width="${size}" height="${size}" loading="lazy" alt="" data-fallback-kind="placeholder" data-fallback-class="${cls}-placeholder" data-fallback-size="${size}" data-fallback-text="👤">`;
+  }
   return `<span class="${cls}-placeholder" style="width:${size}px;height:${size}px">👤</span>`;
 }
 
 function _symbolImg(url, size, cls) {
-  if (!url) return '';
+  const safeUrl = safeImageUrl(url);
+  if (!safeUrl) return '';
   const symTitle = currentLang === 'ta' ? TAMIL.election_symbol : 'Election Symbol';
-  return `<img src="${url}" class="${cls}" width="${size}" height="${size}" loading="lazy" title="${symTitle}" onerror="this.style.display='none'">`;
+  return `<img src="${safeUrl}" class="${cls}" width="${size}" height="${size}" loading="lazy" title="${escapeHtml(symTitle)}" alt="" data-fallback-kind="hide">`;
 }
 
 function _affidavitUrl(cand) {
   const profileRaw = cand && typeof cand.profile_url === 'string' ? cand.profile_url.trim() : '';
   if (!profileRaw) return null;
-  try {
-    const profileUrl = new URL(profileRaw);
-    if (!/affidavit\.eci\.gov\.in$/i.test(profileUrl.hostname)) return null;
-    if (!/\/show-profile\//i.test(profileUrl.pathname)) return null;
-    return profileUrl.toString();
-  } catch {
-    return null;
-  }
+  return safeHttpsUrl(profileRaw, [/(^|\.)affidavit\.eci\.gov\.in$/i], /\/show-profile\//i);
 }
 
 function openAffidavitUrl(url) {
@@ -1221,6 +1908,9 @@ function openDetailPanel(c, district) {
   const tba = ta ? TAMIL.tba : 'TBA';
   const na = ta ? TAMIL.na : 'N/A';
   const slate = _getVerifiedSlate(c);
+  const shouldHydrateCandidateData = typeof CandidateData !== 'undefined' && !CandidateData.isAvailable();
+
+  panel.dataset.ac = String(c.ac);
 
   // Filter candidates table to this constituency
   filterCandidatesTableByAC(c.ac);
@@ -1242,18 +1932,20 @@ function openDetailPanel(c, district) {
               const hasCriminal = cand.has_criminal_cases;
               const genderIcon = genderSymbol(cand.gender);
               const genderText = cand.gender === 'M' ? (ta ? 'ஆண்' : 'Male') : cand.gender === 'F' ? (ta ? 'பெண்' : 'Female') : cand.gender === 'O' ? (ta ? 'பிற' : 'Other') : '';
+              const safeCandidateName = escapeHtml(cand.name);
+              const safePartyName = escapeHtml(partyFullName(cand.party_code) || cand.party_name || '');
               return `
-              <div class="panel-candidate-card" style="border-left-color:${getPartyColor(cand.party_code)};border-right-color:${getAllianceColor(cand.party_code)}" onclick="openCandidateModal(_candLookup['${cand.candidate_id}'])">
+              <div class="panel-candidate-card" style="border-left-color:${getPartyColor(cand.party_code)};border-right-color:${getAllianceColor(cand.party_code)}" data-candidate-id="${escapeHtml(cand.candidate_id)}">
                 <div class="pcc-header">
                   ${_photoImg(cand.photo_url, 40, 'pcc-photo')}
                   <div class="pcc-info">
-                    <div class="pc-name">${cand.name}</div>
+                    <div class="pc-name">${safeCandidateName}</div>
                     <div class="pc-party pcc-meta" style="display:flex;align-items:center;flex-wrap:wrap;gap:0.18rem;line-height:1.2;">
                       <span class="pcc-meta-item" style="display:inline-flex;align-items:center;gap:0.15rem;">${partyLabel(cand.party_code)}</span>
                       ${cand.age ? `<span class="pcc-sep" style="display:inline-flex;align-items:center;line-height:1;opacity:0.7;padding:0 0.05rem;">·</span><span class="pcc-meta-item" style="display:inline-flex;align-items:center;gap:0.15rem;"><span class="pcc-gender-symbol" style="display:inline-flex;align-items:center;justify-content:center;width:0.85em;line-height:1;">${genderIcon || ''}</span>${cand.age}</span>` : ''}
                       ${genderText ? `<span class="pcc-sep" style="display:inline-flex;align-items:center;line-height:1;opacity:0.7;padding:0 0.05rem;">·</span><span class="pcc-meta-item" style="display:inline-flex;align-items:center;gap:0.15rem;">${genderText}</span>` : ''}
                     </div>
-                    <div class="pc-party" style="font-size:0.7rem;opacity:0.7">${partyFullName(cand.party_code) || cand.party_name}</div>
+                    <div class="pc-party" style="font-size:0.7rem;opacity:0.7">${safePartyName}</div>
                   </div>
                   ${_symbolImg(cand.election_symbol_url, 32, 'pcc-symbol')}
                   ${hasCriminal ? `<span class="pcc-badge pcc-criminal" title="${ta ? TAMIL.criminal_cases : 'Criminal cases'}">⚠</span>` : ''}
@@ -1312,8 +2004,8 @@ function openDetailPanel(c, district) {
 
   content.innerHTML = `
     <div class="panel-header">
-      <h2>${constName(c)}</h2>
-      <div class="panel-ac">${ta ? 'தொ.' : 'AC'} ${c.ac} · ${dist}</div>
+      <h2>${escapeHtml(constName(c))}</h2>
+      <div class="panel-ac">${ta ? 'தொ.' : 'AC'} ${c.ac} · ${escapeHtml(dist)}</div>
     </div>
     <div class="panel-section">
       <h4>${ta ? TAMIL.voter_demographics : 'Voter Demographics'}</h4>
@@ -1330,7 +2022,7 @@ function openDetailPanel(c, district) {
       <div class="panel-candidate">
         <div class="pc-dot" style="background:${getPartyColor(c.w21)}"></div>
         <div>
-          <div class="pc-name">${c.w21n || na}</div>
+          <div class="pc-name">${escapeHtml(c.w21n || na)}</div>
           <div class="pc-party">${partyLabel(c.w21)} · ${ta ? '2021 ' + TAMIL.winner : '2021 Winner'}</div>
         </div>
       </div>
@@ -1340,14 +2032,23 @@ function openDetailPanel(c, district) {
       <div class="panel-candidate">
         <div class="pc-dot" style="background:${c.w16 ? getPartyColor(c.w16) : '#555'}"></div>
         <div>
-          <div class="pc-name">${c.w16n || na}</div>
+          <div class="pc-name">${escapeHtml(c.w16n || na)}</div>
           <div class="pc-party">${c.w16 ? partyLabel(c.w16) : na} · ${ta ? '2016 ' + TAMIL.winner : '2016 Winner'}</div>
         </div>
       </div>
     </div>
   `;
 
+  bindDynamicContent(content);
   panel.classList.add('open');
+
+  if (shouldHydrateCandidateData) {
+    ensureCandidateDataLoaded().then((available) => {
+      if (available && panel.classList.contains('open') && panel.dataset.ac === String(c.ac)) {
+        openDetailPanel(c, district);
+      }
+    });
+  }
 }
 
 function closePanel() {
@@ -1367,6 +2068,11 @@ function openCandidateModal(cand) {
   const hasCriminal = cand.has_criminal_cases;
   const affidavitUrl = _affidavitUrl(cand);
   const hasAffidavit = affidavitUrl != null;
+  const safePhotoUrl = safeImageUrl(cand.photo_url);
+  const safeSymbolUrl = safeImageUrl(cand.election_symbol_url);
+  const safeName = escapeHtml(cand.name);
+  const safePartyFull = escapeHtml(partyFullName(cand.party_code) || cand.party_name || '');
+  const safeAcName = escapeHtml(acName || '');
 
   let financialHTML = '';
   if (hasFinancial) {
@@ -1394,28 +2100,29 @@ function openCandidateModal(cand) {
 
   let affidavitHTML = '';
   if (hasAffidavit) {
-    affidavitHTML = `<div class="cm-section" style="text-align:center"><button type="button" onclick="openAffidavitUrl('${affidavitUrl}')" class="party-badge" style="background:var(--accent);color:#fff;text-decoration:none;padding:0.4rem 1rem;font-size:0.85rem;border:0;cursor:pointer">${ta ? TAMIL.view_affidavit : 'View Affidavit'}</button></div>`;
+    affidavitHTML = `<div class="cm-section" style="text-align:center"><button type="button" data-affidavit-url="${escapeHtml(affidavitUrl)}" class="party-badge" style="background:var(--accent);color:#fff;text-decoration:none;padding:0.4rem 1rem;font-size:0.85rem;border:0;cursor:pointer">${ta ? TAMIL.view_affidavit : 'View Affidavit'}</button></div>`;
   }
 
   mc.innerHTML = `
     <div class="cm-header">
-      ${cand.photo_url ? `<img src="${cand.photo_url}" class="cm-photo" style="border-color:${color}" onerror="this.outerHTML='<span class=cm-photo-placeholder style=border-color:${color}>👤</span>'">` : `<span class="cm-photo-placeholder" style="border-color:${color}">👤</span>`}
+      ${safePhotoUrl ? `<img src="${safePhotoUrl}" class="cm-photo" style="border-color:${color}" alt="" data-fallback-kind="placeholder" data-fallback-class="cm-photo-placeholder" data-fallback-text="👤" data-fallback-border-color="${color}">` : `<span class="cm-photo-placeholder" style="border-color:${color}">👤</span>`}
       <div>
-        <div class="cm-name">${cand.name}</div>
+        <div class="cm-name">${safeName}</div>
         <span class="cm-party-badge" style="background:${color}">${partyLabel(cand.party_code)}</span>
-        <div class="cm-party-full">${partyFullName(cand.party_code) || cand.party_name}</div>
+        <div class="cm-party-full">${safePartyFull}</div>
       </div>
-      ${cand.election_symbol_url ? `<img src="${cand.election_symbol_url}" class="cm-symbol" title="${ta ? TAMIL.election_symbol : 'Election Symbol'}" onerror="this.style.display='none'">` : ''}
+      ${safeSymbolUrl ? `<img src="${safeSymbolUrl}" class="cm-symbol" title="${escapeHtml(ta ? TAMIL.election_symbol : 'Election Symbol')}" alt="" data-fallback-kind="hide">` : ''}
     </div>
     <div class="cm-bio-grid">
       <div class="cm-bio-item"><div class="cm-bio-label">${ta ? TAMIL.age_label : 'Age'}</div><div class="cm-bio-value">${cand.age || '—'}</div></div>
       <div class="cm-bio-item"><div class="cm-bio-label">${ta ? TAMIL.gender_label : 'Gender'}</div><div class="cm-bio-value">${genderText}</div></div>
-      <div class="cm-bio-item"><div class="cm-bio-label">${ta ? TAMIL.constituency : 'Constituency'}</div><div class="cm-bio-value">${acName}</div></div>
+      <div class="cm-bio-item"><div class="cm-bio-label">${ta ? TAMIL.constituency : 'Constituency'}</div><div class="cm-bio-value">${safeAcName}</div></div>
       <div class="cm-bio-item"><div class="cm-bio-label">${ta ? TAMIL.ac_number : 'AC Number'}</div><div class="cm-bio-value">${cand.ac_no}</div></div>
     </div>
     ${financialHTML}${criminalHTML}${affidavitHTML}
   `;
 
+  bindDynamicContent(mc);
   const modalOverlay = document.getElementById('candidateModal');
   const modalBox = modalOverlay ? modalOverlay.querySelector('.cand-modal') : null;
   if (modalBox) modalBox.scrollTop = 0;
@@ -1485,7 +2192,7 @@ function renderTable(data) {
 
 function filterTable(query) {
   if (!query) { renderTable(tableData); return; }
-  const q = query.toLowerCase();
+  const q = normalizeSearchQuery(query);
   const filtered = tableData.filter(r =>
     r.some(cell => String(cell).toLowerCase().includes(q)) ||
     (CONST_TAMIL[r[1]] && CONST_TAMIL[r[1]].includes(q)) ||
@@ -1527,7 +2234,7 @@ function buildCandidatesTable() {
   if (!all.length) return;
 
   candTableData = all;
-  candFilteredData = [];
+  candFilteredData = candSelectedAC ? candTableData.filter(c => c.ac_no === candSelectedAC) : candTableData;
   candidatesTableBuilt = true;
   all.forEach(c => { _candLookup[c.candidate_id] = c; });
 
@@ -1546,12 +2253,12 @@ function renderCandidatesTable() {
   tbody.innerHTML = page.map(c => {
     const acName = ta && CONST_TAMIL[c.ac_name] ? CONST_TAMIL[c.ac_name] : c.ac_name;
     const dist = ta && DISTRICT_TAMIL[c.district] ? DISTRICT_TAMIL[c.district] : c.district;
-    return `<tr onclick="openCandidateModal(_candLookup['${c.candidate_id}'])">
+    return `<tr data-candidate-id="${escapeHtml(c.candidate_id)}">
       <td>${_photoImg(c.photo_url, 28, 'cand-photo-thumb')}</td>
       <td>${c.ac_no}</td>
-      <td>${acName}</td>
-      <td>${dist}</td>
-      <td><strong>${c.name}</strong></td>
+      <td>${escapeHtml(acName)}</td>
+      <td>${escapeHtml(dist)}</td>
+      <td><strong>${escapeHtml(c.name)}</strong></td>
       <td><span class="party-badge" style="background:${getPartyColor(c.party_code)}">${partyLabel(c.party_code)}</span></td>
       <td>${c.age || '—'}</td>
       <td>${c.gender === 'M' ? (ta ? 'ஆண்' : 'Male') : c.gender === 'F' ? (ta ? 'பெண்' : 'Female') : c.gender === 'O' ? (ta ? 'பிற' : 'Other') : '—'}</td>
@@ -1560,6 +2267,8 @@ function renderCandidatesTable() {
       <td>${c.has_criminal_cases ? '<span class="pcc-badge pcc-criminal">⚠ ' + c.pending_cases_count + '</span>' : '—'}</td>
     </tr>`;
   }).join('');
+
+  bindDynamicContent(tbody);
 
   // Pagination info
   const total = candFilteredData.length;
@@ -1578,7 +2287,7 @@ function filterCandidatesTable(query) {
   candCurrentPage = 1;
   const base = candSelectedAC ? candTableData.filter(c => c.ac_no === candSelectedAC) : candTableData;
   if (!query) { candFilteredData = base; renderCandidatesTable(); return; }
-  const q = query.toLowerCase();
+  const q = normalizeSearchQuery(query);
   candFilteredData = base.filter(c =>
     c.name.toLowerCase().includes(q) ||
     c.party_code.toLowerCase().includes(q) ||
@@ -2488,8 +3197,10 @@ function buildResultsYear(year, partyField, nameField) {
   `).join('');
 
   // Seats bar chart
+  const seatsKey = `results${year}Seats`;
+  if (chartInstances[seatsKey]) chartInstances[seatsKey].destroy();
   const seatsCtx = document.getElementById(`results${year}SeatsChart`).getContext('2d');
-  new Chart(seatsCtx, {
+  chartInstances[seatsKey] = new Chart(seatsCtx, {
     type: 'bar',
     data: {
       labels: sorted.map(s => partyLabel(s[0])),
@@ -2514,8 +3225,10 @@ function buildResultsYear(year, partyField, nameField) {
     return totalB - totalA;
   }).slice(0, 12);
   const allParties = sorted.map(s => s[0]);
+  const distKey = `results${year}District`;
+  if (chartInstances[distKey]) chartInstances[distKey].destroy();
   const distCtx = document.getElementById(`results${year}DistrictChart`).getContext('2d');
-  new Chart(distCtx, {
+  chartInstances[distKey] = new Chart(distCtx, {
     type: 'bar',
     data: {
       labels: distSorted.map(d => ta && DISTRICT_TAMIL[d[0]] ? DISTRICT_TAMIL[d[0]] : d[0].charAt(0) + d[0].slice(1).toLowerCase()),
@@ -2626,7 +3339,7 @@ function buildResultsTable(year, partyField, nameField) {
 }
 
 function filterResultsTable(year) {
-  const query = document.getElementById(`results${year}Search`).value.toLowerCase();
+  const query = normalizeSearchQuery(document.getElementById(`results${year}Search`).value);
   const rows = document.querySelectorAll(`#results${year}Table tbody tr`);
   rows.forEach(row => {
     const text = row.textContent.toLowerCase();
@@ -2636,68 +3349,23 @@ function filterResultsTable(year) {
 
 function rebuildResults() {
   if (!resultsBuilt) return;
-  const ta = currentLang === 'ta';
-  // Rebuild summary cards, insights, and tables for both years
-  ['2021', '2016'].forEach(year => {
-    const partyField = year === '2021' ? 'w21' : 'w16';
-    const nameField = year === '2021' ? 'w21n' : 'w16n';
-    const seats = {};
-    CONSTITUENCIES.forEach(c => {
-      const p = c[partyField] || 'Others';
-      seats[p] = (seats[p] || 0) + 1;
-    });
-    const sorted = Object.entries(seats).sort((a, b) => b[1] - a[1]);
-    const seatsWord = ta ? 'இடங்கள்' : 'seats';
-
-    // Rebuild summary cards
-    const summaryEl = document.getElementById(`results${year}Summary`);
-    if (summaryEl) {
-      summaryEl.innerHTML = sorted.map(([party, count]) => `
-        <div class="results-summary-card" style="border-left:4px solid ${getPartyColor(party)}">
-          <div class="rsc-party">${partyLabel(party)}</div>
-          <div class="rsc-seats">${count}</div>
-          <div class="rsc-label">${seatsWord}</div>
-        </div>
-      `).join('');
-    }
-
-    // Rebuild insights
-    buildResultsInsights(year, partyField, nameField, sorted);
-
-    // Rebuild winners table
-    buildResultsTable(year, partyField, nameField);
-
-    // Update heading
-    const heading = document.querySelector(`#results-${year} .results-heading`);
-    if (heading) {
-      heading.textContent = ta
-        ? `${year} தமிழ்நாடு சட்டமன்றத் தேர்தல் முடிவுகள்`
-        : `${year} Tamil Nadu Assembly Election Results`;
-    }
-  });
-
-  // Translate results tab static i18n elements
-  document.querySelectorAll('#tab-results [data-i18n]').forEach(el => {
-    const key = el.dataset.i18n;
-    if (ta && TAMIL[key]) {
-      if (!el.dataset.en) el.dataset.en = el.textContent;
-      el.textContent = TAMIL[key];
-    } else if (el.dataset.en) {
-      el.textContent = el.dataset.en;
-    }
-  });
+  const selected = document.getElementById('resultsYearSelect')?.value || '2026';
+  buildResultsYear('2021', 'w21', 'w21n');
+  buildResultsYear('2016', 'w16', 'w16n');
+  switchResultsYear(selected);
+  updateCountdown();
 }
 
 /* === Init === */
 document.addEventListener('DOMContentLoaded', () => {
-  initMap();
-  // Preload enriched candidate data (non-blocking)
-  if (typeof CandidateData !== 'undefined') {
-    CandidateData.load().then(() => {
-      if (tableBuilt) buildTable();
-      if (candidatesTableBuilt) renderCandidatesTable();
-    });
-  }
+  initMap().catch((error) => {
+    console.error('Map initialization failed:', error);
+    const mapContainer = document.getElementById('mapSvg');
+    if (mapContainer) {
+      mapContainer.innerHTML = `<div style="padding:1rem;color:var(--accent);font-weight:600">${currentLang === 'ta' ? 'வரைபடத்தை ஏற்ற முடியவில்லை.' : 'Unable to load map.'}</div>`;
+    }
+  });
+  renderManifestoAudit('2021');
   // Apply saved language on load
   if (currentLang === 'ta') {
     setLanguage('ta');

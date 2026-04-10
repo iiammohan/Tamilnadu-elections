@@ -1,0 +1,125 @@
+{
+  "generated_on": "2026-04-10",
+  "purpose": "Official-government evidence pack to supplement media-based manifesto audit",
+  "DMK_2021": {
+    "free_bus_travel_women": {
+      "status": "officially implemented",
+      "official_sources": [
+        {
+          "url": "https://www.tnsocialwelfare.tn.gov.in/en/specilisationswomen-welfare/free-travel-for-women-in-government-buses",
+          "evidence": "Free travel facilities have been provided for all women including working women, Transgender and girls who are pursuing higher education in ordinary fare city buses operated under the control of the Tamil Nadu State Transport Corporation since 2021."
+        },
+        {
+          "url": "https://spc.tn.gov.in/vidiyal-payanam-scheme/",
+          "evidence": "The flagship Vidiyal Payanam Scheme – announced by the Tamil Nadu Government in May 2021 – waives charges for travel by the women commuters in ordinary fare State-owned public buses."
+        },
+        {
+          "url": "https://arasubus.tn.gov.in/services.php",
+          "evidence": "About 41 lakhs women use the buses daily. This No fare travel scheme will improve women's access to work, education, health and recreation."
+        }
+      ]
+    },
+    "kalaignar_magalir_urimai_thogai": {
+      "status": "officially implemented",
+      "official_sources": [
+        {
+          "url": "https://kmut.tn.gov.in/",
+          "evidence": "Dedicated official portal for Kalaignar Magalir Urimai Thogai."
+        },
+        {
+          "url": "https://kmut.tn.gov.in/about-kmut.html",
+          "evidence": "The portal describes beneficiary eligibility, economic criteria, implementation departments, and confirms the scheme as a live monthly entitlement programme announced by the Chief Minister."
+        },
+        {
+          "url": "https://tnlasdigital.tn.gov.in/jspui/women-welfare.jsp",
+          "evidence": "Tamil Nadu Legislative Assembly digital repository lists Kalaignar Magalir Urimai Thogai under women welfare."
+        }
+      ]
+    },
+    "aavin_milk_price_cut": {
+      "status": "officially implemented",
+      "official_sources": [
+        {
+          "url": "https://aavin.tn.gov.in/dairy-development-department1",
+          "evidence": "The Hon'ble Chief Minister of Tamil Nadu has ordered to reduce the selling price of Aavin milk by Rs.3/- per litre w.e.f. 16.05.2021."
+        },
+        {
+          "url": "https://www.aavin.tn.gov.in/strategies",
+          "evidence": "The Honourable Chief Minister of Tamil Nadu has ordered to reduce the selling price of Aavin milk by Rs.3/- per litre w.e.f. 16.05.2021."
+        }
+      ]
+    }
+  },
+  "AIADMK_2016": {
+    "crop_loan_waiver": {
+      "status": "officially implemented",
+      "official_sources": [
+        {
+          "url": "https://cms.tn.gov.in/cms_migrated/document/GO/cfcp_e_50_2016.pdf",
+          "evidence": "Official G.O. for waiver of outstanding crop loan, medium term agriculture loan and long term farm sector loan issued to small and marginal farmers by cooperative banks as on 31.3.2016."
+        },
+        {
+          "url": "https://cms.tn.gov.in/cms_migrated/document/GO/cfcp_e_59_2016.pdf",
+          "evidence": "Guidelines G.O. issued on 28.06.2016 for the crop loan waiver announced by the government."
+        }
+      ]
+    },
+    "free_100_units_electricity": {
+      "status": "officially implemented",
+      "official_sources": [
+        {
+          "url": "https://cms.tn.gov.in/cms_migrated/document/GO/energy_e_37_2016_lr.pdf",
+          "evidence": "The 2016 election manifesto promise of free electricity of 100 units bimonthly to all domestic consumers in all slabs was taken up for implementation through official policy direction."
+        },
+        {
+          "url": "https://tnerc.tn.gov.in/Orders/files/TO-TO%2011%20of%202031020220639.pdf",
+          "evidence": "Tamil Nadu Electricity Regulatory Commission order references G.O.(Ms) No.102 dated 23-05-2016 and the first 100 units free bimonthly policy."
+        },
+        {
+          "url": "https://stationeryprinting.tn.gov.in/extraordinary/2022/473_Ex_II_1.pdf",
+          "evidence": "Tamil Nadu Government Gazette later continues to describe first 100 units free bimonthly in all slabs for domestic consumers."
+        }
+      ]
+    },
+    "amma_two_wheeler_scheme": {
+      "status": "officially implemented",
+      "official_sources": [
+        {
+          "url": "https://stationeryprinting.tn.gov.in/gazette/2018/4_III_2.pdf",
+          "evidence": "Government Gazette references Aadhaar requirement for the Amma Two Wheeler Scheme of Government of Tamil Nadu, confirming live operationalization in 2018."
+        },
+        {
+          "url": "https://edistricts.tn.gov.in/socialwelfare/status.html",
+          "evidence": "Tamil Nadu e-District Social Welfare application status portal exists for scheme-linked social welfare tracking."
+        }
+      ]
+    },
+    "maternity_assistance_18000": {
+      "status": "officially implemented",
+      "official_sources": [
+        {
+          "url": "https://cms.tn.gov.in/cms_migrated/document/GO/hfw_e_94_2024.pdf",
+          "evidence": "Official 2024 G.O. states that the Dr. Muthulakshmi Reddy Maternity Benefit Scheme beneficiary amount was enhanced from Rs.12,000 to Rs.18,000 in 2017."
+        },
+        {
+          "url": "http://www.nhm.tn.gov.in/sites/default/files/gov_order_file/GoMsNo_130_18.pdf",
+          "evidence": "National Health Mission Tamil Nadu document traces the enhancement history of the maternity benefit scheme."
+        }
+      ]
+    },
+    "amma_wifi_zones": {
+      "status": "partially implemented",
+      "official_sources": [
+        {
+          "url": "https://it.tn.gov.in/en/node/215",
+          "evidence": "Free public Wi-Fi through Amma Wi-Fi zones was announced for 50 places in first phase, but the department page says TACTV implemented the scheme on a pilot basis in 5 locations and launched it on 05.04.2018."
+        },
+        {
+          "url": "https://it.tn.gov.in/en/TACTV/AMMA_WI-FI_Zones",
+          "evidence": "Official IT Department page confirms free use for 20 minutes per user per day and identifies the five pilot rollout locations."
+        }
+      ]
+    }
+  },
+  "method_note": "Where official PDF extraction failed in the tool, the linked official document URLs were still retained when search snippets exposed the exact G.O. title or implementation description. Those should be manually opened if you want courtroom-grade verification."
+}

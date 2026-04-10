@@ -1,0 +1,119 @@
+{
+  "generated_on": "2026-04-10",
+  "scope": "Tamil Nadu manifesto implementation audit using manifesto documents, independent reporting, and public implementation reporting",
+  "manifests": {
+    "DMK_2021": {
+      "manifesto_url": "https://drive.google.com/file/d/1q8lv_2JzW-5xdTo8gVplTsWQW1Hd4aOp/preview",
+      "total_promises": 505,
+      "aggregate_claims": [
+        {
+          "source": "The Hindu",
+          "date": "2026-01-03",
+          "type": "party claim reported by media",
+          "completed": 364,
+          "under_consideration": 40,
+          "reported_percent": 80,
+          "calculated_completed_percent": 72.08,
+          "calculated_completed_plus_under_consideration_percent": 80.0,
+          "note": "The reported 80% matches completed plus under consideration, not completed alone."
+        },
+        {
+          "source": "South First",
+          "date": "2026-04-04",
+          "type": "independent media analysis",
+          "completed": 394,
+          "unfulfilled": 111,
+          "reported_percent": 78.02,
+          "calculated_completed_percent": 78.02,
+          "note": "This is the cleanest mathematically consistent public count located during research."
+        },
+        {
+          "source": "New Indian Express / The Week snippets quoting DMK MLA Ezhilan Naganathan",
+          "date": "2026-03-27",
+          "type": "party claim reported by media",
+          "completed": 404,
+          "reported_percent": 85,
+          "calculated_completed_percent": 80.0,
+          "note": "The raw count 404/505 equals 80%, so the reported nearly 85% is arithmetically inconsistent."
+        }
+      ],
+      "best_available_position": "High-confidence public range is 364 completed at minimum (official party figure reported in Jan 2026) to 394 completed in South First's independent April 2026 analysis. The 404 figure exists in political reporting but its percentage claim is mathematically inconsistent.",
+      "important_caveat": "Several schemes repeatedly cited in 2026 campaign coverage, including Naan Mudhalvan and the Chief Minister's Breakfast Scheme, are described by some analyses as beyond the original 2021 manifesto, so they should not be counted as manifesto fulfillment without promise-level mapping."
+    },
+    "AIADMK_2016": {
+      "manifesto_url": "https://drive.google.com/file/d/1G9y-R0WvnvhZb2EZ0grlPIcT8v9Pt6X_/preview",
+      "aggregate_claims": [
+        {
+          "source": "The Hindu",
+          "date": "2021-03-10",
+          "type": "status check",
+          "result": "mixed bag",
+          "note": "Named several promises that remained on paper but did not publish a single completed out-of-total number."
+        },
+        {
+          "source": "News18",
+          "date": "2021-03-16",
+          "type": "status check",
+          "result": "many fulfilled, many pending",
+          "note": "Provides examples of both completed and pending promises but no single aggregate completion count."
+        },
+        {
+          "source": "The News Minute",
+          "date": "2021-03-12",
+          "type": "sectoral status check",
+          "result": "mixed",
+          "note": "Promise-level status labels are useful for auditing, but the article covers only water and infrastructure promises."
+        },
+        {
+          "source": "The Week / New Indian Express snippets quoting DMK MLA Ezhilan Naganathan",
+          "date": "2026-03-27",
+          "type": "opposition political claim",
+          "claimed_completion_percent_lt": 33,
+          "note": "Useful as a political contrast point, not as an audited truth."
+        }
+      ],
+      "best_available_position": "No reliable audited completed-out-of-total figure was located from accessible mainstream reporting during this research. The defensible approach is a promise-level audit rather than a single percentage.",
+      "important_caveat": "Any single percentage for AIADMK 2016 should be treated as a political claim unless backed by a transparent itemized audit."
+    }
+  },
+  "recommended_public_use": {
+    "DMK_2021": "Use '394 of 505 fulfilled' only if explicitly attributed to South First analysis, or '364 implemented, 40 under consideration' if explicitly attributed to the DMK/The Hindu report.",
+    "AIADMK_2016": "Use promise-level fulfilled/partial/not fulfilled rows rather than a headline percentage."
+  },
+  "strict_estimation_2026_pass2": {
+    "method": {
+      "why": "Provide a tighter but transparent estimate band without pretending to have a full official audit of every manifesto line item.",
+      "rules": [
+        "Aggregate-party claims are used only when mathematically consistent and source-attributed.",
+        "Promise-level tracker percentages are treated as directional due to sample-selection bias and non-random promise selection.",
+        "Status mapping used for sample bounds: strict mapping counts only 'Fulfilled' and 'Fulfilled or substantially fulfilled' as 1; conservative mapping gives partial credit to partial and project-progress statuses."
+      ]
+    },
+    "DMK_2021": {
+      "robust_range_from_public_counts": {
+        "min_completed": 364,
+        "max_completed": 394,
+        "min_percent_of_505": 72.08,
+        "max_percent_of_505": 78.02,
+        "basis": "Lower bound from Jan 2026 party figure reported by The Hindu; upper bound from South First independent April 2026 analysis.",
+        "excluded_claim": "404 completed with nearly 85% is arithmetically inconsistent with a 505-promise denominator and is excluded from strict range-setting."
+      },
+      "sample_tracker_bounds_directional_only": {
+        "sampled_promises": 23,
+        "strict_percent": 34.78,
+        "conservative_percent": 42.61,
+        "note": "This sampled subset over-represents litigated/high-controversy promises and should not be used as statewide headline completion percentage."
+      },
+      "best_strict_position_now": "Use 364 to 394 completed out of 505 as the defensible range until a full itemized audit is produced."
+    },
+    "AIADMK_2016": {
+      "sample_tracker_bounds_directional_only": {
+        "sampled_promises": 22,
+        "strict_percent": 40.91,
+        "conservative_percent": 57.5,
+        "note": "This is not a full-manifesto completion rate. It is a bounded estimate from currently audited promises only."
+      },
+      "best_strict_position_now": "No single audited completed-out-of-total number is defensible yet; current evidence supports a mixed record with completion likely between the strict and conservative sample bounds, pending full promise-by-promise expansion."
+    }
+  }
+}

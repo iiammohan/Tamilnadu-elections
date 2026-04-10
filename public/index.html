@@ -5,12 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tamil Nadu 2026 Election Dashboard</title>
   <meta name="description" content="Interactive dashboard for the 2026 Tamil Nadu Legislative Assembly Elections — constituency map, voter data, candidate lists, and alliance breakdowns.">
-  <!-- Built with Perplexity — https://www.perplexity.ai/computer -->
-  <meta name="generator" content="Perplexity Computer">
   <meta name="referrer" content="origin">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -305,6 +306,7 @@
       <div class="manifesto-subtabs">
         <button class="manifesto-subtab active" onclick="switchManifestoTab('quantifiable')" data-i18n="quantifiable">Quantifiable Promises</button>
         <button class="manifesto-subtab" onclick="switchManifestoTab('ideological')" data-i18n="ideological">Ideological Positions</button>
+        <button class="manifesto-subtab" onclick="switchManifestoTab('audit')" data-i18n="mf_audit_tab">Previous-Term Audits</button>
       </div>
 
       <div id="manifesto-quantifiable" class="manifesto-section active">
@@ -1420,6 +1422,41 @@
           </div>
         </div>
       </div>
+
+      <div id="manifesto-audit" class="manifesto-section">
+        <h3 class="manifesto-section-title" data-i18n="mf_audit_title">Previous-Term Manifesto Audits</h3>
+        <p class="manifesto-section-desc" data-i18n="mf_audit_desc">Review 2021 and 2016 previous-term manifesto audits with source-backed status, verification method, and implementation analysis.</p>
+
+        <div class="mf-audit-toolbar">
+          <label for="manifestoAuditYear" data-i18n="mf_audit_year">Manifesto Year</label>
+          <select id="manifestoAuditYear" onchange="renderManifestoAudit(this.value)">
+            <option value="2021">2021</option>
+            <option value="2016">2016</option>
+          </select>
+        </div>
+
+        <div id="manifestoAuditSummary" class="mf-audit-summary"></div>
+
+        <div class="mf-audit-table-wrap">
+          <table class="mf-audit-table">
+            <thead>
+              <tr>
+                <th data-i18n="mf_audit_category">Category</th>
+                <th data-i18n="mf_audit_promise">Promise / Commitment</th>
+                <th data-i18n="mf_audit_status">Status</th>
+                <th data-i18n="mf_audit_confidence">Confidence</th>
+                <th data-i18n="mf_audit_sources">Sources</th>
+                <th data-i18n="mf_audit_evidence">Evidence Notes</th>
+              </tr>
+            </thead>
+            <tbody id="manifestoAuditBody"></tbody>
+          </table>
+        </div>
+
+        <div id="manifestoAuditInsights" class="mf-term-analysis"></div>
+        <div id="manifestoAuditValidation" class="mf-validation-card"></div>
+        <div id="manifestoAuditMethod" class="mf-method-card"></div>
+      </div>
     </div>
   </section>
 
@@ -1511,7 +1548,7 @@
   </section>
 
   <footer class="footer">
-    <p data-i18n="footer_text">Data sources: Election Commission of India, Tamil Nadu CEO Office, Wikipedia. Built with <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener">Perplexity</a>.</p>
+    <p data-i18n="footer_text">Data sources: Election Commission of India, Tamil Nadu CEO Office, Wikipedia.</p>
   </footer>
 
   <!-- Candidate Detail Modal -->
@@ -1525,9 +1562,5 @@
   <script src="dataLoader.js"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>
-  <!-- Vercel Analytics -->
-  <script defer src="/_vercel/insights/script.js"></script>
-  <!-- Vercel Web Analytics -->
-  <script defer src="/_vercel/speed-insights/script.js"></script>
 </body>
 </html>

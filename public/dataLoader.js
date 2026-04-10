@@ -13,9 +13,13 @@ const CandidateData = (() => {
   async function _fetch(path) {
     try {
       const resp = await fetch(path);
-      if (!resp.ok) return null;
+      if (!resp.ok) {
+        console.warn(`CandidateData: request failed for ${path} with status ${resp.status}`);
+        return null;
+      }
       return await resp.json();
-    } catch {
+    } catch (error) {
+      console.warn(`CandidateData: failed to load ${path}`, error);
       return null;
     }
   }
@@ -33,6 +37,9 @@ const CandidateData = (() => {
       _all = all;
       _summary = summary;
       _loaded = !!(_byAC || _all);
+      if (!_loaded) {
+        console.warn('CandidateData: enriched candidate data unavailable; falling back to static dashboard mode');
+      }
       return _loaded;
     })();
     return _loading;
