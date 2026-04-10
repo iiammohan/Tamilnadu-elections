@@ -1200,6 +1200,19 @@ function _affidavitUrl(cand) {
   }
 }
 
+function openAffidavitUrl(url) {
+  if (!url) return;
+  try {
+    const parsed = new URL(url);
+    if (!/affidavit\.eci\.gov\.in$/i.test(parsed.hostname)) return;
+    if (!/\/show-profile\//i.test(parsed.pathname)) return;
+    const opened = window.open(parsed.toString(), '_blank', 'noopener,noreferrer');
+    if (!opened) window.location.href = parsed.toString();
+  } catch {
+    // Ignore malformed URLs.
+  }
+}
+
 /* === Detail Panel === */
 function openDetailPanel(c, district) {
   const panel = document.getElementById('detailPanel');
@@ -1378,7 +1391,7 @@ function openCandidateModal(cand) {
 
   let affidavitHTML = '';
   if (hasAffidavit) {
-    affidavitHTML = `<div class="cm-section" style="text-align:center"><a href="${affidavitUrl}" target="_blank" rel="noopener" class="party-badge" style="background:var(--accent);color:#fff;text-decoration:none;padding:0.4rem 1rem;font-size:0.85rem">${ta ? TAMIL.view_affidavit : 'View Affidavit'}</a></div>`;
+    affidavitHTML = `<div class="cm-section" style="text-align:center"><button type="button" onclick="openAffidavitUrl('${affidavitUrl}')" class="party-badge" style="background:var(--accent);color:#fff;text-decoration:none;padding:0.4rem 1rem;font-size:0.85rem;border:0;cursor:pointer">${ta ? TAMIL.view_affidavit : 'View Affidavit'}</button></div>`;
   }
 
   mc.innerHTML = `
