@@ -1206,8 +1206,7 @@ function openAffidavitUrl(url) {
     const parsed = new URL(url);
     if (!/affidavit\.eci\.gov\.in$/i.test(parsed.hostname)) return;
     if (!/\/show-profile\//i.test(parsed.pathname)) return;
-    const opened = window.open(parsed.toString(), '_blank', 'noopener,noreferrer');
-    if (!opened) window.location.href = parsed.toString();
+    window.open(parsed.toString(), '_blank', 'noopener,noreferrer');
   } catch {
     // Ignore malformed URLs.
   }
@@ -1413,7 +1412,10 @@ function openCandidateModal(cand) {
     ${financialHTML}${criminalHTML}${affidavitHTML}
   `;
 
-  document.getElementById('candidateModal').classList.add('active');
+  const modalOverlay = document.getElementById('candidateModal');
+  const modalBox = modalOverlay ? modalOverlay.querySelector('.cand-modal') : null;
+  if (modalBox) modalBox.scrollTop = 0;
+  modalOverlay.classList.add('active');
 }
 
 function closeCandidateModal(event) {
