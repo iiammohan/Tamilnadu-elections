@@ -1147,6 +1147,105 @@ const AUDIT_PROMISE_TAMIL = {
   'Convert Cuddalore harbour into a deep-sea harbour': 'கடலூர் துறைமுகத்தை ஆழ்கடல் துறைமுகமாக மாற்றுதல்'
 };
 
+const MANIFESTO_AUDIT_SUMMARY_TAMIL = {
+  '2021': {
+    strictRange: '364 முதல் 394 வரை நிறைவேற்றம்',
+    strictPercent: '72.08% முதல் 78.02%',
+    estimateNote: 'South First (ஏப்ரல் 2026 தனித்த ஆய்வு) மற்றும் அதிகாரப்பூர்வ அரசு தளங்களை அடிப்படையாகக் கொண்ட உறுதி-நிலை ஆய்வு. கீழ் வரம்பு: The Hindu (ஜனவரி 2026) வெளியிட்ட DMK கணக்கு 364/505. மேல் வரம்பு: South First சுயாதீன கணக்கு 394/505 (ஏப்ரல் 2026).'
+  },
+  '2016': {
+    strictRange: 'ஒற்றை முழுமையான audit மொத்தம் இல்லை',
+    strictPercent: 'திசைமுக மாதிரி வரம்பு: strict 40.91% முதல் conservative 57.50% வரை',
+    estimateNote: 'The Hindu (மார்ச் 2021), News18 (மார்ச் 2021), The News Minute (மார்ச் 2021) நிலைச் சரிபார்ப்புகளை இணைத்து promise-level ஆய்வு செய்யப்பட்டது. சரிபார்க்கப்பட்ட அமலாக்கத்திற்கு அரசாணை (G.O.) ஆதாரங்கள் பயன்படுத்தப்பட்டன. அனைத்து துறைகளையும் உள்ளடக்கும் ஒற்றை completion எண்ணிக்கை எந்த ஒரு மூலத்திலும் இல்லை.'
+  }
+};
+
+const AUDIT_EVIDENCE_TAMIL_BY_PROMISE = {
+  'Free bus travel for women in state-run urban and suburban buses': 'South First (2 ஆய்வுகள், ஏப் 2026): முக்கிய வாக்குறுதி நிறைவேற்றப்பட்டது. ArasuBus அதிகாரப்பூர்வ தளத்தில், விடியல் பயணம் திட்டத்தில் நாளொன்றுக்கு சுமார் 41 லட்சம் பெண்கள் பயணிப்பதாக பதிவு.',
+  'Reduce Aavin milk prices by Rs 3 per litre': 'South First (2 ஆய்வுகள்): 16.05.2021 முதல் லிட்டருக்கு ரூ.3 குறைப்பு அமல்படுத்தப்பட்டதாக குறிப்பிடுகிறது. Aavin அதிகாரப்பூர்வ தள ஆதாரத்தால் உறுதி செய்யப்பட்டது.',
+  'Rs 1,000 monthly assistance for eligible women heads of households (KMUT)': 'South First (2 ஆய்வுகள்): கலைஞர் மகளிர் உரிமைத் தொகை மூலம் அமல்படுத்தப்பட்டது; சுமார் 1.31 கோடி பயனாளர்கள் rollout குறிப்பிடப்பட்டுள்ளது.',
+  'Rs 4,000 Covid cash relief for ration card holders': 'South First (2 ஆய்வுகள்): ஆட்சியேற்றத்திற்குப் பிறகு முதல் கட்டத்தில் நிறைவேற்றப்பட்ட நிவாரண உறுதிமொழியாக குறிப்பிடப்பட்டுள்ளது.',
+  'Increase reservation for women in government jobs from 30% to 40%': 'South First: பெண்கள் நலத் துறையில் அமல்படுத்தப்பட்ட உருப்படியாக பட்டியலிடப்பட்டுள்ளது.',
+  'Extend maternity leave for women employees from 9 months to 12 months': 'South First: சட்ட அடிப்படையில் அமல்படுத்தப்பட்டதாக குறிப்பிடப்பட்டுள்ளது.',
+  'Set up working women hostels in all districts': 'South First: அமல்படுத்தப்பட்டதாக பதிவு.',
+  'Allocate Rs 1,000 crore for temple renovation': 'South First: ஒதுக்கீடு செய்யப்பட்டு நடவடிக்கை எடுக்கப்பட்டதாக குறிப்பிடப்படுகிறது; முழு செலவீன் நிறைவு தனியாக audit செய்யப்படவில்லை.',
+  'Reduce petrol by Rs 5 and diesel by Rs 4': 'South First: ரூ.5/ரூ.4 இலக்கத்துடன் ஒப்பிடும்போது ரூ.3 பெட்ரோல் மற்றும் ரூ.2 டீசல் குறைப்பு மட்டுமே நடந்தது.',
+  'Live-stream Assembly proceedings for transparency': 'South First: நேரலை உள்ளது; ஆனால் எதிர்க்கட்சிப் பேச்சுகள் துண்டிக்கப்படுவதாகக் கூறப்பட்டதால் பகுதி நிறைவேற்றம்.',
+  'Withdraw cases against Sterlite, hydrocarbon, methane, Kudankulam protesters': 'South First: சில வழக்குகள் இன்னும் நிலுவையில் உள்ளன; 2021க்கு பிறகும் புதிய வழக்குகள் உள்ளன.',
+  'Establish Semmozhi Poongas in all municipal corporations': 'South First: ஆட்சிக்காலத்தில் கோயம்புத்தூர் மட்டும் வழங்கப்பட்டதாக குறிப்பிடுகிறது.',
+  'Reduce LPG cylinder price / give LPG subsidy (Rs 100 per cylinder)': 'South First (2 ஆய்வுகள்): LPG மானியம் / விலை குறைப்பு அமல்படுத்தப்படவில்லை.',
+  'Student education loan waiver for eligible youth': 'South First (2 ஆய்வுகள்): நிறைவேறாதது / நிலுவையில் உள்ளது என இரு ஆய்வுகளும் குறிப்பிடுகின்றன.',
+  '75% reservation for Tamil Nadu residents in private sector employment': 'South First (2 ஆய்வுகள்): இலட்சியமாக இருந்தாலும் நடைமுறைக்கு வரவில்லை என குறிப்பிடுகிறது.',
+  'Increase financial assistance under marriage assistance schemes': 'South First: 255–259 உறுதிமொழிகள் பெரும்பாலும் நடைமுறைக்கு வரவில்லை என கண்காணிப்பு பதிவு.',
+  'Government jobs for unmarried women above age 35 based on qualification': 'South First: #262 உறுதிமொழி நிறைவேறாததாகத் தெளிவாகக் குறிப்பிடப்பட்டுள்ளது.',
+  'Do not increase property tax until Covid effects subside': 'South First: #487 உறுதிமொழிக்கு மாறாக 2022ல் சொத்து வரி உயர்த்தப்பட்டது.',
+  'Reserve 100% of government and public sector jobs for Tamil Nadu youth': 'South First: #495 உறுதிமொழி நடைமுறைக்கு வரவில்லை.',
+  'Regularise part-time art, music and physical education teachers': 'South First: #181 உறுதிமொழி இன்னும் நிலுவையில் உள்ளது.',
+  'Implement old pension scheme for transport workers': 'South First: அமல்படுத்தப்படவில்லை; TAPS போக்குவரத்து ஊழியர்களுக்கு விரிவாக்கப்படவில்லை.',
+  'Revive the Tamil Nadu Legislative Council': 'South First: நிறைவேறாத நிறுவன சீர்திருத்த உறுதிமொழிகளில் ஒன்று.',
+  'Provide monthly assistance to Jallikattu participants': 'South First: நிறைவேறாத பட்டியலில் இடம்பெற்றுள்ளது; இரண்டாம் நிலை உறுதிப்படுத்தல் மேலும் தேவை.',
+  'Waive outstanding cooperative crop loans as on 31.03.2016': 'அதிகாரப்பூர்வ G.O. CFCP 50/2016 மற்றும் 59/2016 வெளியிடப்பட்டது; News18 பதவியேற்புக்கு பிந்தைய உடனடி நடவடிக்கையை உறுதிசெய்கிறது; பின்னர் உச்சநீதிமன்ற stay இதன் முக்கியத்துவத்தை காட்டுகிறது.',
+  'Provide 100 free units of electricity every two months to all domestic consumers': 'News18: உடனடி ஆணை வெளியிடப்பட்டது; TNERC ஆணையில் G.O.(Ms) No.102 (23-05-2016) குறிப்பிடப்பட்டுள்ளது; கொள்கை தொடர்ச்சி உறுதி.',
+  '50% subsidy up to Rs 20,000 for working women to buy scooters': 'The Hindu (அறிக்கை வெளியீடு) மற்றும் News18: பதவியேற்றதும் ஆணை வெளியிடப்பட்டதாக குறிப்பிடுகின்றன.',
+  'Increase maternity assistance from Rs 12,000 to Rs 18,000': 'News18 இதை நிறைவேற்றப்பட்டதாகத் தெளிவாகக் குறிப்பிடுகிறது.',
+  'Construct 5,000 houses for fishermen': 'News18 நிறைவேற்றப்பட்டதாகக் குறிப்பிடுகிறது; இரண்டாம் நிலை ஆதாரம் இப்பொதியில் சேர்க்கப்படவில்லை.',
+  'Free laptops for students': 'News18 பெரிய அளவில் அமல்படுத்தப்பட்டதாகக் கூறுகிறது; கூடுதல் இரண்டாம் நிலை ஆதாரம் இப்போதைக்கு இணைக்கப்படவில்லை.',
+  'Cauvery Water Management Board / Authority implementation': 'The News Minute: 2018 மத்திய அறிவிப்புக்கு பின் நிறைவேற்றப்பட்டதாக வகைப்படுத்துகிறது.',
+  'Prevent Karnataka from constructing Mekedatu dam': 'The News Minute (வரையறுக்கப்பட்ட அர்த்தத்தில்): அறிக்கை காலவரை சுற்றுச்சூழல் அனுமதி வழங்கப்படாததால் outcome நிறைவேற்றம் என கருதுகிறது.',
+  'Metro extension to Airport and Washermanpet to Wimco Nagar (Chennai)': 'The News Minute இந்த உருப்படியை நேரடியாக நிறைவேற்றப்பட்டது என குறிக்கிறது.',
+  'Free Wi-Fi in public places': 'The Hindu மற்றும் News18: 5 நகரங்களில் வரையறுக்கப்பட்ட Amma Free Wi-Fi மண்டலங்கள் மட்டுமே தொடங்கப்பட்டன.',
+  'Phased prohibition and closure of TASMAC shops': 'The Hindu மற்றும் News18: சுமார் 500 கடைகள் மூடப்பட்டன; ஆனால் முழு மதுவிலக்கு அமல்படுத்தப்படவில்லை.',
+  'Protected agricultural zone / no methane or shale gas projects in delta': 'The News Minute: பாதுகாக்கப்பட்ட வேளாண் மண்டலம் அறிவிக்கப்பட்டது; நடப்பு திட்டங்கள் குறித்து தீராத கேள்விகள் உள்ளன.',
+  'Monorail in Chennai, Madurai, Trichy and Coimbatore': 'The News Minute இதை பகுதி நிறைவேற்றம் என வகைப்படுத்துகிறது.',
+  'Free cell phones for ration card holders': 'The Hindu மற்றும் News18 இரண்டும் இது நடைமுறைக்கு வராததாக குறிப்பிடுகின்றன.',
+  'Amma banking card for the poor to avail state services': 'The Hindu மற்றும் News18: தரைமட்ட அமலாக்கம் இல்லாததாகக் கூறுகின்றன.',
+  'Increase Mullaiperiyar dam level to 152 feet': 'The News Minute இதை நிறைவேறாததாக நேரடியாகக் குறிக்கிறது.',
+  'Implement Pamba-Achankovil-Vaipaaru river linking project': 'The News Minute இதை நிறைவேறாததாக குறிப்பிடுகிறது.',
+  'Elevated highway from Meenambakkam to Chengalpattu': 'The News Minute இதை நிறைவேறாததாகத் தெளிவாக வகைப்படுத்துகிறது.',
+  'Athikadavu-Avinashi irrigation project': 'The News Minute: "project launched" என வகைப்படுத்துகிறது; அடிக்கல் நாட்டப்பட்டாலும் முழு நிறைவேற்றம் எட்டப்படவில்லை.',
+  'Link Cauvery-Vaigai-Mahanadhi-Godavari-Krishna-Gundaru rivers': 'The News Minute: 2021ல் அடிக்கல் நாட்டப்பட்டது; "project launched" நிலையாகவே வகைப்படுத்தப்படுகிறது.',
+  'Stormwater drains in Greater Chennai Corporation limits': 'The News Minute: "project underway" நிலை; இன்னும் முழு நிறைவேற்ற நிலைக்கு வரவில்லை.',
+  'Convert Cuddalore harbour into a deep-sea harbour': 'The News Minute: மத்திய அனுமதி மற்றும் CRZ clearance இருந்ததாகக் கூறுகிறது; முழு செயல்பாட்டு நிறைவு தனி நிலை.'
+};
+
+function getEvidenceSourceTagLabel(tag, ta) {
+  if (!ta) return tag;
+  const map = {
+    'South First': 'சவுத் ஃபர்ஸ்ட்',
+    'The Hindu': 'தி இந்து',
+    'News18': 'நியூஸ்18',
+    'The News Minute': 'தி நியூஸ் மினிட்',
+    'NIE': 'நியூ இந்தியன் எக்ஸ்பிரஸ்',
+    'The Week': 'தி வீக்',
+    'Official': 'அதிகாரப்பூர்வம்',
+    'Mixed/Other': 'கலப்பு/பிற'
+  };
+  return map[tag] || tag;
+}
+
+function getAuditStrictRange(year, value, ta) {
+  if (!ta) return value;
+  const record = MANIFESTO_AUDIT_SUMMARY_TAMIL[year];
+  return (record && record.strictRange) || value;
+}
+
+function getAuditStrictPercent(year, value, ta) {
+  if (!ta) return value;
+  const record = MANIFESTO_AUDIT_SUMMARY_TAMIL[year];
+  return (record && record.strictPercent) || value;
+}
+
+function getAuditEstimateNote(year, value, ta) {
+  if (!ta) return value;
+  const record = MANIFESTO_AUDIT_SUMMARY_TAMIL[year];
+  return (record && record.estimateNote) || value;
+}
+
+function getAuditEvidenceLabel(row, ta) {
+  if (!ta) return row.evidence || '';
+  return AUDIT_EVIDENCE_TAMIL_BY_PROMISE[row.promise] || row.evidence || '';
+}
+
 function getAuditCategoryLabel(category, ta) {
   if (!ta) return category || '';
   return AUDIT_CATEGORY_TAMIL[category] || category || '';
@@ -1391,17 +1490,17 @@ function renderManifestoAudit(year) {
   summaryEl.innerHTML = `
     <div class="mf-audit-card">
       <div class="mf-audit-card-label">${labels.party}</div>
-      <div class="mf-audit-card-value">${data.party} (${year})</div>
+      <div class="mf-audit-card-value">${partyLabel(data.party)} (${year})</div>
       <div class="mf-audit-card-sub">${labels.total}: ${totalText}</div>
     </div>
     <div class="mf-audit-card">
       <div class="mf-audit-card-label">${labels.range}</div>
-      <div class="mf-audit-card-value">${data.strictRange}</div>
-      <div class="mf-audit-card-sub">${data.strictPercent}</div>
+      <div class="mf-audit-card-value">${getAuditStrictRange(year, data.strictRange, ta)}</div>
+      <div class="mf-audit-card-sub">${getAuditStrictPercent(year, data.strictPercent, ta)}</div>
     </div>
     <div class="mf-audit-card">
       <div class="mf-audit-card-label">${labels.notes}</div>
-      <div class="mf-audit-card-sub">${data.estimateNote}</div>
+      <div class="mf-audit-card-sub">${getAuditEstimateNote(year, data.estimateNote, ta)}</div>
     </div>
   `;
 
@@ -1411,14 +1510,15 @@ function renderManifestoAudit(year) {
     const sourceTags = getEvidenceSourceTags(row.evidence);
     const categoryLabel = getAuditCategoryLabel(row.category, ta);
     const promiseLabel = getAuditPromiseLabel(row.promise, ta);
+    const evidenceLabel = getAuditEvidenceLabel(row, ta);
     return `
       <tr>
         <td data-label="${ta ? 'வகை' : 'Category'}"><span class="mf-category-tag">${categoryLabel}</span></td>
         <td data-label="${ta ? 'உறுதி / வாக்குறுதி' : 'Promise / Commitment'}">${promiseLabel}</td>
         <td data-label="${ta ? 'நிலை' : 'Status'}"><span class="mf-status-badge ${s.cls}">${statusLabel}</span></td>
         <td data-label="${ta ? 'நம்பிக்கை' : 'Confidence'}">${getConfidenceLabel(row.confidence, ta)}</td>
-        <td data-label="${ta ? 'மூலங்கள்' : 'Sources'}">${sourceTags.map((tag) => `<span class="mf-source-tag">${tag}</span>`).join(' ')}</td>
-        <td data-label="${ta ? 'ஆதார குறிப்பு' : 'Evidence Notes'}">${row.evidence}</td>
+        <td data-label="${ta ? 'மூலங்கள்' : 'Sources'}">${sourceTags.map((tag) => `<span class="mf-source-tag">${getEvidenceSourceTagLabel(tag, ta)}</span>`).join(' ')}</td>
+        <td data-label="${ta ? 'ஆதார குறிப்பு' : 'Evidence Notes'}">${evidenceLabel}</td>
       </tr>
     `;
   }).join('');
