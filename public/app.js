@@ -1487,7 +1487,9 @@ function filterTable(query) {
   if (!query) { renderTable(tableData); return; }
   const q = query.toLowerCase();
   const filtered = tableData.filter(r =>
-    r.some(cell => String(cell).toLowerCase().includes(q))
+    r.some(cell => String(cell).toLowerCase().includes(q)) ||
+    (CONST_TAMIL[r[1]] && CONST_TAMIL[r[1]].includes(q)) ||
+    (DISTRICT_TAMIL[r[2]] && DISTRICT_TAMIL[r[2]].includes(q))
   );
   renderTable(filtered);
 }
@@ -1583,7 +1585,9 @@ function filterCandidatesTable(query) {
     c.party_name.toLowerCase().includes(q) ||
     c.ac_name.toLowerCase().includes(q) ||
     (c.district && c.district.toLowerCase().includes(q)) ||
-    String(c.ac_no).includes(q)
+    String(c.ac_no).includes(q) ||
+    (CONST_TAMIL[c.ac_name] && CONST_TAMIL[c.ac_name].includes(q)) ||
+    (c.district && DISTRICT_TAMIL[c.district] && DISTRICT_TAMIL[c.district].includes(q))
   );
   renderCandidatesTable();
 }
