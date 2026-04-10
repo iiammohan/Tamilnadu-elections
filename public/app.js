@@ -991,7 +991,8 @@ function _candidateMatchesParty(cand, partyCode) {
 function _candidateCompleteness(cand) {
   if (!cand) return 0;
   let score = 0;
-  if (cand.profile_url || cand.affidavit_pdf_url) score += 4;
+  if (cand.profile_url) score += 4;
+  else if (cand.affidavit_pdf_url) score += 1;
   if (cand.photo_url) score += 2;
   if (cand.age != null) score += 1;
   return score;
@@ -1188,22 +1189,12 @@ function _symbolImg(url, size, cls) {
 
 function _affidavitUrl(cand) {
   const profileRaw = cand && typeof cand.profile_url === 'string' ? cand.profile_url.trim() : '';
-  if (profileRaw) {
-    try {
-      const profileUrl = new URL(profileRaw);
-      if (/affidavit\.eci\.gov\.in$/i.test(profileUrl.hostname) && /\/show-profile\//i.test(profileUrl.pathname)) {
-        return profileUrl.toString();
-      }
-    } catch {
-      // Fall back to the legacy PDF token URL below.
-    }
-  }
-  const raw = cand && typeof cand.affidavit_pdf_url === 'string' ? cand.affidavit_pdf_url.trim() : '';
-  if (!raw) return null;
+  if (!profileRaw) return null;
   try {
-    const url = new URL(raw);
-    if (!/affidavit\.eci\.gov\.in$/i.test(url.hostname)) return null;
-    return url.toString();
+    const profileUrl = new URL(profileRaw);
+    if (!/affidavit\.eci\.gov\.in$/i.test(profileUrl.hostname)) return null;
+    if (!/\/show-profile\//i.test(profileUrl.pathname)) return null;
+    return profileUrl.toString();
   } catch {
     return null;
   }
