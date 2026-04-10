@@ -389,6 +389,32 @@ body {
 .panel-candidate-card .pcc-info { flex: 1; min-width: 0; }
 .panel-candidate-card .pc-name { font-weight: 600; font-size: 0.82rem; }
 .panel-candidate-card .pc-party { font-size: 0.7rem; color: var(--text-muted); }
+.panel-candidate-card .pcc-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.18rem;
+  line-height: 1.2;
+}
+.panel-candidate-card .pcc-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+.panel-candidate-card .pcc-sep {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  opacity: 0.7;
+  padding: 0 0.05rem;
+}
+.panel-candidate-card .pcc-gender-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.85em;
+  line-height: 1;
+}
 .pcc-badge {
   font-size: 0.72rem;
   padding: 0.15rem 0.35rem;
@@ -1198,6 +1224,7 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
   .manifesto-subtab { padding: 0.4rem 0.9rem; font-size: 0.78rem; }
   /* Candidate cards & table responsive */
   .panel-candidates-list { max-height: 250px; }
+  .panel-candidate-card .pcc-meta { gap: 0.15rem; }
   .pcc-financials { flex-direction: column; gap: 0.25rem; }
   .cand-pagination { flex-wrap: wrap; }
   #candTable th, #candTable td { font-size: 0.72rem; padding: 0.35rem 0.4rem; }

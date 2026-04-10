@@ -1248,7 +1248,11 @@ function openDetailPanel(c, district) {
                   ${_photoImg(cand.photo_url, 40, 'pcc-photo')}
                   <div class="pcc-info">
                     <div class="pc-name">${cand.name}</div>
-                    <div class="pc-party">${partyLabel(cand.party_code)}${cand.age ? ' · ' + genderIcon + ' ' + cand.age : ''}${genderText ? ' · ' + genderText : ''}</div>
+                    <div class="pc-party pcc-meta" style="display:flex;align-items:center;flex-wrap:wrap;gap:0.18rem;line-height:1.2;">
+                      <span class="pcc-meta-item" style="display:inline-flex;align-items:center;gap:0.15rem;">${partyLabel(cand.party_code)}</span>
+                      ${cand.age ? `<span class="pcc-sep" style="display:inline-flex;align-items:center;line-height:1;opacity:0.7;padding:0 0.05rem;">·</span><span class="pcc-meta-item" style="display:inline-flex;align-items:center;gap:0.15rem;"><span class="pcc-gender-symbol" style="display:inline-flex;align-items:center;justify-content:center;width:0.85em;line-height:1;">${genderIcon || ''}</span>${cand.age}</span>` : ''}
+                      ${genderText ? `<span class="pcc-sep" style="display:inline-flex;align-items:center;line-height:1;opacity:0.7;padding:0 0.05rem;">·</span><span class="pcc-meta-item" style="display:inline-flex;align-items:center;gap:0.15rem;">${genderText}</span>` : ''}
+                    </div>
                     <div class="pc-party" style="font-size:0.7rem;opacity:0.7">${partyFullName(cand.party_code) || cand.party_name}</div>
                   </div>
                   ${_symbolImg(cand.election_symbol_url, 32, 'pcc-symbol')}
