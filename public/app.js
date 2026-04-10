@@ -775,9 +775,12 @@ function setLanguage(lang) {
   if (chartsBuilt) rebuildGenderChart();
   // Translate manifesto static content
   translateManifestoContent();
-  // Refresh manifesto audit labels/status text for active language
+  // Refresh manifesto audit labels only after the audit section has been rendered once.
   const auditYearEl = document.getElementById('manifestoAuditYear');
-  if (auditYearEl) renderManifestoAudit(auditYearEl.value || '2021');
+  const isAuditActive = document.getElementById('manifesto-audit')?.classList.contains('active');
+  if (auditYearEl && (manifestoAuditRendered || isAuditActive)) {
+    ensureManifestoAuditRendered(auditYearEl.value || '2021');
+  }
   // Rebuild results tab if rendered
   if (resultsBuilt) rebuildResults();
   // Rebuild candidates table if built
@@ -861,7 +864,7 @@ function switchManifestoTab(sub) {
   document.getElementById(`manifesto-${sub}`).classList.add('active');
   if (sub === 'audit') {
     const yearEl = document.getElementById('manifestoAuditYear');
-    renderManifestoAudit(yearEl ? yearEl.value : '2021');
+    ensureManifestoAuditRendered(yearEl ? yearEl.value : '2021');
   }
 }
 
@@ -1276,6 +1279,13 @@ function getManifestoStatusBucket(status) {
   if (normalized.includes('fulfilled') && !normalized.includes('part')) return 'fulfilled';
   if (normalized.includes('part')) return 'partial';
   return 'progress';
+}
+
+let manifestoAuditRendered = false;
+
+function ensureManifestoAuditRendered(year = '2021') {
+  renderManifestoAudit(year);
+  manifestoAuditRendered = true;
 }
 
 function renderManifestoAuditChart(rows) {
@@ -3458,14 +3468,22 @@ function rebuildResults() {
 
 /* === Init === */
 document.addEventListener('DOMContentLoaded', () => {
-  initMap().catch((error) => {
-    console.error('Map initialization failed:', error);
-    const mapContainer = document.getElementById('mapSvg');
-    if (mapContainer) {
-      mapContainer.innerHTML = `<div style="padding:1rem;color:var(--accent);font-weight:600">${currentLang === 'ta' ? 'வரைபடத்தை ஏற்ற முடியவில்லை.' : 'Unable to load map.'}</div>`;
-    }
-  });
-  renderManifestoAudit('2021');
+  const bootMap = () => {
+    initMap().catch((error) => {
+      console.error('Map initialization failed:', error);
+      const mapContainer = document.getElementById('mapSvg');
+      if (mapContainer) {
+        mapContainer.innerHTML = `<div style="padding:1rem;color:var(--accent);font-weight:600">${currentLang === 'ta' ? 'வரைபடத்தை ஏற்ற முடியவில்லை.' : 'Unable to load map.'}</div>`;
+      }
+    });
+  };
+
+  if (window.matchMedia('(max-width: 768px)').matches) {
+    window.requestAnimationFrame(bootMap);
+  } else {
+    bootMap();
+  }
+
   // Apply saved language on load
   if (currentLang === 'ta') {
     setLanguage('ta');
