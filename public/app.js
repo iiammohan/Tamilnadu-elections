@@ -1552,6 +1552,8 @@ function ensureCandidateDataLoaded() {
   candidateDataLoadPromise = CandidateData.load()
     .then((available) => {
       if (available) {
+        // Table may have been built before candidate data arrived; recompute slates now.
+        if (tableBuilt) buildTable();
         if (tableBuilt && !candidatesTableBuilt) buildCandidatesTable();
         if (chartsBuilt && !candChartsBuilt) buildCandidateCharts();
       }
@@ -1882,8 +1884,8 @@ function _getVerifiedSlate(constData) {
     sc: spaCandidate ? spaCandidate.name : fallback.sc,
     np: ndaParty || fallback.np,
     nc: ndaCandidate ? ndaCandidate.name : fallback.nc,
-    tc: tvkCandidate ? tvkCandidate.name : (tvkHasAny ? '—' : fallback.tc),
-    nkc: ntkCandidate ? ntkCandidate.name : (ntkHasAny ? '—' : fallback.nkc),
+    tc: tvkCandidate ? tvkCandidate.name : (tvkHasAny ? '' : fallback.tc),
+    nkc: ntkCandidate ? ntkCandidate.name : (ntkHasAny ? '' : fallback.nkc),
   };
 }
 
@@ -2362,7 +2364,9 @@ function renderCandidatesTable() {
 
   tbody.innerHTML = page.map(c => {
     const acName = ta && CONST_TAMIL[c.ac_name] ? CONST_TAMIL[c.ac_name] : c.ac_name;
-    const dist = ta && DISTRICT_TAMIL[c.district] ? DISTRICT_TAMIL[c.district] : c.district;
+    const fallbackConst = getConstData(c.ac_no);
+    const rawDistrict = c.district || (fallbackConst ? fallbackConst.d : '');
+    const dist = ta && DISTRICT_TAMIL[rawDistrict] ? DISTRICT_TAMIL[rawDistrict] : rawDistrict;
     return `<tr data-candidate-id="${escapeHtml(c.candidate_id)}">
       <td>${_photoImg(c.photo_url, 28, 'cand-photo-thumb')}</td>
       <td>${c.ac_no}</td>
@@ -2372,9 +2376,6 @@ function renderCandidatesTable() {
       <td><span class="party-badge" style="background:${getPartyColor(c.party_code)}">${partyLabel(c.party_code)}</span></td>
       <td>${c.age || '—'}</td>
       <td>${c.gender === 'M' ? (ta ? 'ஆண்' : 'Male') : c.gender === 'F' ? (ta ? 'பெண்' : 'Female') : c.gender === 'O' ? (ta ? 'பிற' : 'Other') : '—'}</td>
-      <td class="num">${CandidateData.formatCurrency(c.assets_total)}</td>
-      <td class="num">${CandidateData.formatCurrency(c.liabilities_total)}</td>
-      <td>${c.has_criminal_cases ? '<span class="pcc-badge pcc-criminal">⚠ ' + c.pending_cases_count + '</span>' : '—'}</td>
     </tr>`;
   }).join('');
 
@@ -2412,8 +2413,9 @@ function filterCandidatesTable(query) {
 }
 
 function sortCandidatesTable(col) {
-  const keys = ['ac_no', 'ac_name', 'district', 'name', 'party_code', 'age', 'gender', 'assets_total', 'liabilities_total', 'pending_cases_count'];
+  const keys = ['ac_no', 'ac_name', 'district', 'name', 'party_code', 'age', 'gender'];
   const key = keys[col];
+  if (!key) return;
   if (candSortCol === col) candSortAsc = !candSortAsc;
   else { candSortCol = col; candSortAsc = true; }
   candFilteredData.sort((a, b) => {
