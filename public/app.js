@@ -508,9 +508,9 @@ function getStatewideElectorSummary() {
 function genderSymbol(gender) {
   if (!gender) return '';
   const normalized = String(gender).trim().toUpperCase();
-  if (normalized === 'M' || normalized === 'MALE') return '♂';
-  if (normalized === 'F' || normalized === 'FEMALE') return '♀';
-  if (normalized === 'T' || normalized === 'TG' || normalized === 'THIRD GENDER' || normalized === 'TRANSGENDER' || normalized === 'OTHER' || normalized === 'O') return '⚧';
+  if (normalized === 'M' || normalized === 'MALE') return '♂︎';
+  if (normalized === 'F' || normalized === 'FEMALE') return '♀︎';
+  if (normalized === 'T' || normalized === 'TG' || normalized === 'THIRD GENDER' || normalized === 'TRANSGENDER' || normalized === 'OTHER' || normalized === 'O') return '⚧︎';
   return '';
 }
 
@@ -2213,9 +2213,9 @@ function buildAgeCohortSection(ta, statewide) {
           <span class="age-bar age-bar-tg" style="width:${Math.max(tgPct, 0.25).toFixed(2)}%"></span>
         </div>
         <div class="age-cohort-breakdown">
-          <span>♂ ${formatNum(cohort.male)}</span>
-          <span>♀ ${formatNum(cohort.female)}</span>
-          <span>⚧ ${formatNum(cohort.tg)}</span>
+          <span>♂︎ ${formatNum(cohort.male)}</span>
+          <span>♀︎ ${formatNum(cohort.female)}</span>
+          <span>⚧︎ ${formatNum(cohort.tg)}</span>
         </div>
       </div>
     `;
